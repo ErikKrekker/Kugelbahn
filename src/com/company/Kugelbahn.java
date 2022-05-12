@@ -1,3 +1,5 @@
+package com.company;
+
 public class Kugelbahn {
     static double v0, s0, vx, vy, sx, sy, ax ,ay, t, m, b, y, x;
     static double vel[] = new double[2];

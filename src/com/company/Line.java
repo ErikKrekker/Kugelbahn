@@ -1,3 +1,4 @@
+package com.company;
 public class Line {
 
     int x0;
