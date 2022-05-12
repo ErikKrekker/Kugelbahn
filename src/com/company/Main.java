@@ -26,7 +26,7 @@ public class Main {
 
         //Start settings
         Kugelbahn.pos[0] = 8;
-        Kugelbahn.pos[1] = -13;
+        Kugelbahn.pos[1] = 13;
 
         Kugelbahn.vel[0] = 0;
         Kugelbahn.vel[1] = 0;
@@ -36,7 +36,7 @@ public class Main {
 
         Kugelbahn.gravity[0] = 0;
         //Kugelbahn.gravity[1] = -9.81;
-        Kugelbahn.gravity[1] = -10;
+        Kugelbahn.gravity[1] = 10;
 
 
         JPanel screen = new JPanel();
@@ -92,8 +92,9 @@ public class Main {
         field.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                x = e.getX() / 10;
-                y = (e.getY() / 10) * -1;
+                x = e.getX() / Screen.scale;
+                y = (e.getY() / Screen.scale);
+                //y = (e.getY() / Screen.scale) * -1;
 
                 programmupdate(x,y, velx_val,vely_val,windx_val,windy_val,field);
                 System.out.println(x);

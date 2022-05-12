@@ -13,6 +13,7 @@ public class Screen extends JPanel implements Runnable {
     public static int height = 750;
 
     static int diameter = 10;
+    static int radius = diameter/2;
     static int scale = 10;
 
     static boolean outOfBounds = false;
@@ -89,17 +90,19 @@ public class Screen extends JPanel implements Runnable {
 
         Graphics2D g2 = (Graphics2D)g;
 
+        /*
         g2.setColor(Color.white);
-
         g2.drawLine(Kugelbahn.lines[0].getX0() * scale, Kugelbahn.lines[0].getY0() * scale, Kugelbahn.lines[0].getX1() * scale, Kugelbahn.lines[0].getY1() * scale);
         g2.setColor(Color.blue);
         g2.drawLine(Kugelbahn.lines[1].getX0() * scale, Kugelbahn.lines[1].getY0() * scale, Kugelbahn.lines[1].getX1() * scale, Kugelbahn.lines[1].getY1() * scale);
         g2.setColor(Color.cyan);
         g2.drawLine(Kugelbahn.lines[2].getX0() * scale, Kugelbahn.lines[2].getY0() * scale, Kugelbahn.lines[2].getX1() * scale, Kugelbahn.lines[2].getY1() * scale);
-
+        */
+        g2.drawLine(Kugelbahn.line1.getX0() * scale, Kugelbahn.line1.getY0() * scale, Kugelbahn.line1.getX1() * scale, Kugelbahn.line1.getY1() * scale );
         g2.setColor(Color.white);
         //Zeichnen der Kugel
-        g2.fillOval((int)(Kugelbahn.pos[0]*scale - (diameter/2)) ,(int)((Kugelbahn.pos[1]*scale + (diameter/2))*-1), diameter, diameter);
+        //g2.fillOval((int)(Kugelbahn.pos[0]*scale - (diameter/2)) ,(int)((Kugelbahn.pos[1]*scale + (diameter/2))*-1), diameter, diameter);
+        g2.fillOval((int)(Kugelbahn.pos[0]*scale - radius) ,(int)((Kugelbahn.pos[1]*scale - radius)), diameter, diameter);
 
         g2.dispose();
     }
@@ -107,7 +110,7 @@ public class Screen extends JPanel implements Runnable {
     //schaut, ob die Kugel an den Seiten bzw. unten aus dem Bild fliegt
     public void checkBounds(){
 
-        if((int)(Kugelbahn.pos[0]*scale - (diameter/2)) >= width || (int)(Kugelbahn.pos[0]*scale + (diameter/2)) < 0 || (int)(Kugelbahn.pos[1]*scale + (diameter/2)) <= -height){
+        if((int)(Kugelbahn.pos[0]*scale - radius) >= width || (int)(Kugelbahn.pos[0]*scale + radius) < 0 || (int)(Kugelbahn.pos[1]*scale + radius) >= height){
             outOfBounds = true;
             System.out.println("--------ENDE---------");
         }

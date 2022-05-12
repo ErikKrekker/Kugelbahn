@@ -23,11 +23,11 @@ public class Kugelbahn {
         //Prüft ob die Kugel am fallen ist
         //checkMovementChange();
         checkMovement();
-        System.out.println();
+
         updateVelDis();
 
         calcAngle();
-        calcDistance();
+        collisionCheck();
     }
 
     public static void calcVelocity(double t)
@@ -84,9 +84,24 @@ public class Kugelbahn {
     //Sprunghöhenverlust
     //http://docplayer.org/72996896-Die-hyperaktive-kugel-wann-hoert-sie-endlich-auf-zu-springen.html (Abschnitt 3.5.3)
 
-    public static void calcDistance(){
+    public static void collisionCheck(){
 
+        calcDistancePointLine(1);
+        System.out.println(d);
+        //Kugel trifft von oben auf die Gerade
+        if(crossP < 0 && d <= 0.4 && pos[0] >= line1.getX0() && pos[0] <= line1.getX1()){
+            System.out.println("BONKKK");
+            vel[1] = -(vel[1] * heightLoss);
+            vel[0] = 0;
+        }
 
+        //Kugel trifft von unten auf die Gerade
+        else if (crossP > 0 && d<= 0.4 && pos[0] >= line1.getX0() && pos[0] <= line1.getX1()){
+            System.out.println("BONKKKKK2");
+            vel[1] = -(vel[1] * heightLoss);
+            vel[0] = 0;
+        }
+        /*
         System.out.println(d);
         for(int i = 0;i < lines.length; i++){
             schnittPunktX(i);
@@ -107,6 +122,8 @@ public class Kugelbahn {
             //verhindert, dass Kugel direkt nach Aufprall durch die Linie fliegt / stecken bleibt
             else if(d >= -0.4 && d <= 0.1 && falling == false && pos[0] >= lines[i].getX0() && pos[0] <= lines[i].getX1()){
                 System.out.println("Bonk3");
+                pos[0] = pos[0] + Screen.radius/Screen.scale;
+                pos[1] = pos[1] - Screen.radius/Screen.scale;
                 vel[1] = -(vel[1] * heightLoss);
                 if(m<0)
                     vel[0] = -(vel[1] / Math.tan(angle));
@@ -114,32 +131,29 @@ public class Kugelbahn {
                     vel[0] = (vel[1] / Math.tan(angle));
             }
 
-        }
+        }*/
     }
+    static double crossP;
+    static Line line1 = new Line(25, 25, 15, 5);
+    public static void calcDistancePointLine(int i){
+        double richtungX = pos[0] - line1.getX0();
+        double richtungY = pos[1] - line1.getY0();
 
-    public static void schnittPunktX(int i){
+        double normX = -1*(line1.getY1() - line1.getY0());
+        double normY = (line1.getX1() - line1.getX0());
 
-        m = ((double)lines[i].getY1() - (double)lines[i].getY0()) / ((double)lines[i].getX1() - (double)lines[i].getX0());
-        if(m == Double.POSITIVE_INFINITY || m == Double.NEGATIVE_INFINITY)
-            m = 1/1000000;
-        //System.out.println(m);
-        b = (double)lines[i].getY0() - m * (double)lines[i].getX0();
+        crossP = richtungX * normX + richtungY * normY;
 
-        y = m * pos[0] + b;
+        d = Math.abs((richtungX * normX + richtungY * normY) / Math.sqrt(Math.pow(normX, 2) + Math.pow(normY, 2)) + Screen.radius/Screen.scale);
 
-        d = pos[1] + y;
-        /*
-        //Schaut ob die Senkrechte der Kugel sich mit einer Linie schneidet
-        if(y >= lines[i].getY0() && y <= lines[i].getY1()){
-            //Abstand zum Schnittpunkt
-            d = pos[1] + y;
-            System.out.println("Hii");        }
+        System.out.println(crossP);
 
-        else if(y <= lines[1].getY0() && y >= lines[1].getY1()){
-            d = pos[1] + y;
-            System.out.println("Hii2");
-        }
-        */
+        if(crossP > 0)
+            System.out.println("Der Punkt liegt unter der Linie");
+        else if(crossP < 0)
+            System.out.println("Der Punkt liegt über der Linie");
+        else
+            System.out.println("Der Punkt liegt genau auf der Linie");
 
     }
 
