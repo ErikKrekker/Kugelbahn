@@ -21,8 +21,6 @@ public class Screen extends JPanel implements Runnable {
 
     Thread thread;
 
-    int count = 0;
-
     public Screen() {
 
     }

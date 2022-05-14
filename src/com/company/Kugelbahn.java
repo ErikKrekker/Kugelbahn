@@ -1,7 +1,7 @@
 package com.company;
 
 public class Kugelbahn {
-    static double v0, s0, vx, vy, sx, sy, ax ,ay, t, m, b, y, x;
+    static double v0, s0, vx, vy, sx, sy, ax ,ay;
     static double vel[] = new double[2];
     static double pos[] = new double[2];
     static double gravity[] = new double[2];
@@ -12,17 +12,19 @@ public class Kugelbahn {
     static boolean rollen = false;
     static double d = Double.POSITIVE_INFINITY;
 
-    static double heightLoss = 0.78;
+    static double heightLoss = 0.47;
 
     //führt alle Berechnungnen in richitger Reihenfolge aus
+    static double m;
     public static void calc(double t){
 
         calcAcceleration();
         calcVelocity(t);
         calcPosition(t);
-        //Prüft ob die Kugel am fallen ist
-        //checkMovementChange();
+
         checkMovement();
+
+        m = ((double)line1.getY1() - (double)line1.getY0()) / ((double)line1.getX1() - (double)line1.getX0());
 
         collisionCheck();
         updateVelDis();
@@ -53,19 +55,29 @@ public class Kugelbahn {
             ay = gravity[1] + wind[1];
         }
         else if (rollen == true){
-            aHang = Math.abs(gravity[1]) * Math.sin(angle);
-            aNormal = Math.abs(gravity[1] * Math.cos(angle));
-            aReib = Math.abs(aNormal) * 0.5;
-
+            aHang = Math.abs(gravity[1]) * Math.sin(Math.atan((m)));
+            aNormal = Math.abs(gravity[1]) * Math.cos(Math.atan((m)));
+            aReib = Math.abs(aNormal) * 0.15;
+            System.out.println();
             if(aHang > aReib){
                 ax = (vProjektionX/normalizeProjektion) * aHang;
 
                 ay = (vProjektionY/normalizeProjektion) * aHang;
+
             }
-            else{
-                ax = 0;
-                ay = 0;
+
+            else if(aHang <= aReib && m == 0 && vx != 0.0){
+                ay =0;
+                vel[1] = 0;
             }
+
+            else if(aHang <= aReib && m == 0 && vx == 0.0){
+
+                Screen.outOfBounds = true;
+
+                System.out.println("Reibung zu groß");
+            }
+
         }
     }
 
@@ -85,34 +97,35 @@ public class Kugelbahn {
         lines[2] = new Line(0, Screen.width/ Screen.scale,44,44);
     }
 
-    static double normalize;
-    static double bounceX, bounceY;
-    static double normVekNormalize;
+
     public static void collisionCheck(){
 
         calcDistancePointLine(1);
-        //System.out.println("Abstand: " +d);
-        //System.out.println("Kreuzprodukt: " +crossP);
+        //System.out.println("Abstand " + d);
+        //System.out.println("Kreuzprodukt " + crossP);
         //Kugel trifft von oben auf die Gerade
-        if(crossP < 0 &&falling && d <= 0.5 && pos[0] >= line1.getX0() && pos[0] <= line1.getX1()){
+        if(crossP < 0 && falling && !rollen && d <= 0.5 && pos[0] >= line1.getX0() && pos[0] <= line1.getX1()){
             calcAngle();
             vectorZerlegung();
-            if(vectorLength(vParallelX, vParallelY) <= 0.1){
+            System.out.println();
+            System.out.println("Erkannt");
+            if(vectorLength(vParallelX, vParallelY) <= 0.5){
+                System.out.println(vectorLength(vParallelX, vParallelY));
                 rollen = true;
-                pos[0] = line1.getX0();
-                pos[1] = line1.getY0();
                 System.out.println("Bin am rollen");
             }
             else{
-                vy = -(vy * heightLoss);
+                vy = -(heightLoss * (vy + 2*(vy * (normX/normalizeNorm) + vx * (normY/normalizeNorm)) * (normX/normalizeNorm)));
+                vx = -(heightLoss * (vx - 2*(vy * (normX/normalizeNorm) + vx * (normY/normalizeNorm)) * (normY/normalizeNorm)));
                 System.out.println("BONKKK");
             }
         }
 
+    }
+
+        /*
         //Kugel trifft von unten auf die Gerade
         else if (crossP > 0 && !falling && d<= 0.4 && pos[0] >= line1.getX0() && pos[0] <= line1.getX1()){
-            if(vectorLength(vParallelX, vParallelY) <= 0.1)
-                rollen = true;
             System.out.println("BONKKK2");
             calcAngle();
             vectorZerlegung();
@@ -124,13 +137,15 @@ public class Kugelbahn {
             System.out.println("BONKKK2");
             calcAngle();
             vectorZerlegung();
-        }
-    }
+        }*/
+
     static double crossP;
     static double normX, normY; //Richtungsvektor der Geraden
+    static double normalizeNorm;
     static double richtungX, richtungY;
     static double normalizeRichtung;
-    static Line line1 = new Line(20, 30, 24, 30);
+
+    static Line line1 = new Line(5, 30, 30, 20);
 
     public static void calcDistancePointLine(int i){
 
@@ -138,10 +153,12 @@ public class Kugelbahn {
         richtungX = line1.getX0() - pos[0];
         richtungY = line1.getY0() - pos[1];
 
+        //Normalen vektor der Geraden
         normX = (line1.getY1() - line1.getY0());
         normY = -1*(line1.getX1() - line1.getX0());
 
         normalizeRichtung = vectorLength(richtungX, richtungY);
+        normalizeNorm = vectorLength(normX, normY);
 
         crossP = richtungX * normX + richtungY * normY;
 
@@ -158,11 +175,9 @@ public class Kugelbahn {
 
     static double ballVekX;
     static double ballVekY;
-    static double lineVekX;
-    static double lineVekY;
-    static double oben, unten;
+
     static double angle;
-    //Berechnet Winkel zw Gerade & Senkrechte der Kugel
+    //Berechnet Winkel zw Normalenvektor der Geraden & Richtungsvektor der Kugel
     public static void calcAngle(){
 
         ballVekX = -1*(vx - vel[0]);
@@ -171,24 +186,15 @@ public class Kugelbahn {
         angle = Math.acos((ballVekX * normX + ballVekY * normY) / (vectorLength(ballVekX, ballVekY) * vectorLength(normX, normY)));
 
         System.out.println("Winkel: "+ angle);
-        /*
-        lineVekX = lines[1].getX1() - lines[1].getX0();
-        lineVekY = lines[1].getY1() - lines[1].getY0();
-
-        oben = Math.abs(ballVekX * lineVekX + ballVekY * lineVekY);
-
-        unten = Math.sqrt(Math.pow(ballVekX, 2) + Math.pow(ballVekY, 2)) * Math.sqrt(Math.pow(lineVekX, 2) + Math.pow(lineVekY, 2));
-
-        //Winkel wird in Bogenmaß angegeben
-        angle = Math.acos(oben/unten);
-        */
     }
 
     static double vProjektionX;
     static double vProjektionY;
     static double skalar;
     static double vParallelX, vParallelY;
+    static double tempvParallelX, tempvParallelY;
     static double normalizeProjektion;
+
     public static void vectorZerlegung(){
 
         skalar = ((-ballVekX) * (line1.getX1() - line1.getX0()) + (-ballVekY) * (line1.getY1() - line1.getY0())) / (Math.pow((line1.getX1() - line1.getX0()), 2) + Math.pow((line1.getY1() - line1.getY0()), 2));
@@ -200,9 +206,11 @@ public class Kugelbahn {
         normalizeProjektion = vectorLength(vProjektionX, vProjektionY);
 
         //Paralleler Anteil der Zerlegung -> Wird für Entscheidung ob rollen oder springen gebraucht
-        vParallelX = -(ballVekX) - vProjektionX;
-        vParallelY = -(ballVekY) - vProjektionY;
-        System.out.println();
+        tempvParallelX = -(ballVekX) - vProjektionX;
+        tempvParallelY = -(ballVekY) - vProjektionY;
+
+        vParallelX = vel[0] * (tempvParallelX/(vectorLength(tempvParallelX, tempvParallelY)));
+        vParallelY = vel[1] * (tempvParallelY/(vectorLength(tempvParallelX, tempvParallelY)));
     }
 
     public static double vectorLength(double x, double y){
@@ -219,15 +227,3 @@ public class Kugelbahn {
         }
 
     }
-
-/*
-            //alte Berechnung Abstand
-            xtemp = pos[0] - line1.getX0();
-            ytemp = -pos[1] - line1.getY0();
-            //Kreuzprodukt
-            crossx = ytemp * line1.getX1() - xtemp * line1.getY1();
-            crossy = xtemp * line1.getY1() - ytemp * line1.getX1();
-            oben = Math.sqrt(Math.pow(crossx, 2) + Math.pow(crossy, 2));
-            unten = Math.sqrt(Math.pow(line1.getX1(), 2) + Math.pow(line1.getY1(), 2));
-            d = (oben / unten) - ((Screen.diameter/2)/Screen.scale);
-        */

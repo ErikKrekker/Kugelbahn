@@ -29,4 +29,5 @@ public class Line {
     public int getY1(){
         return y1;
     }
+
 }
