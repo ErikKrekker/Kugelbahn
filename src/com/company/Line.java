@@ -7,6 +7,8 @@ public class Line {
     int y0;
     int y1;
 
+    double m;
+
     public Line(int x0, int x1, int y0, int y1){
         this.x0 = x0;
         this.x1 = x1;
@@ -29,5 +31,9 @@ public class Line {
     public int getY1(){
         return y1;
     }
+
+    public void setM(double m) { this.m = m; }
+
+    public double getM() { return m; }
 
 }

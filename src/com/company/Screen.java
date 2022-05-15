@@ -1,10 +1,8 @@
 package com.company;
 import java.awt.Color;
-import java.awt.Dimension;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.GeneralPath;
 
 public class Screen extends JPanel implements Runnable {
 
@@ -20,6 +18,12 @@ public class Screen extends JPanel implements Runnable {
     static boolean outOfBounds = false;
 
     Thread thread;
+
+    static Line lines[] = {
+            new Line(0,20,5,35),
+            new Line(15,40,40,30),
+            //new Line(0, Screen.width/ Screen.scale,45,45)
+    };
 
     public Screen() {
 
@@ -90,15 +94,17 @@ public class Screen extends JPanel implements Runnable {
         Graphics2D g2 = (Graphics2D)g;
 
         g2.setColor(Color.white);
-        /*
+
         g2.setColor(Color.white);
-        g2.drawLine(Kugelbahn.lines[0].getX0() * scale, Kugelbahn.lines[0].getY0() * scale, Kugelbahn.lines[0].getX1() * scale, Kugelbahn.lines[0].getY1() * scale);
+        g2.drawLine(lines[0].getX0() * scale, lines[0].getY0() * scale, lines[0].getX1() * scale, lines[0].getY1() * scale);
+
         g2.setColor(Color.blue);
-        g2.drawLine(Kugelbahn.lines[1].getX0() * scale, Kugelbahn.lines[1].getY0() * scale, Kugelbahn.lines[1].getX1() * scale, Kugelbahn.lines[1].getY1() * scale);
+        g2.drawLine(lines[1].getX0() * scale, lines[1].getY0() * scale, lines[1].getX1() * scale, lines[1].getY1() * scale);
+
         g2.setColor(Color.cyan);
-        g2.drawLine(Kugelbahn.lines[2].getX0() * scale, Kugelbahn.lines[2].getY0() * scale, Kugelbahn.lines[2].getX1() * scale, Kugelbahn.lines[2].getY1() * scale);
-        */
-        g2.drawLine(Kugelbahn.line1.getX0() * scale, Kugelbahn.line1.getY0() * scale, Kugelbahn.line1.getX1() * scale, Kugelbahn.line1.getY1() * scale );
+        //g2.drawLine(lines[2].getX0() * scale, lines[2].getY0() * scale, lines[2].getX1() * scale, lines[2].getY1() * scale);
+
+        //g2.drawLine(Kugelbahn.line1.getX0() * scale, Kugelbahn.line1.getY0() * scale, Kugelbahn.line1.getX1() * scale, Kugelbahn.line1.getY1() * scale );
         g2.setColor(Color.blue);
 
         //Zeichnen der Kugel
