@@ -16,7 +16,6 @@ public class Screen extends JPanel implements Runnable {
     static int scale = 10;
 
     static boolean outOfBounds = false;
-
     Thread thread;
 
     static Line lines[] = {
@@ -32,8 +31,10 @@ public class Screen extends JPanel implements Runnable {
     //führt die run methode aus
     public void startThread(){
 
-        thread = new Thread(this);
-        thread.start();
+
+            thread = new Thread(this);
+            thread.start();
+
     }
     public void pauseThread(){
         thread.stop();
@@ -110,7 +111,6 @@ public class Screen extends JPanel implements Runnable {
         //Zeichnen der Kugel
         //g2.fillOval((int)(Kugelbahn.pos[0]*scale - (diameter/2)) ,(int)((Kugelbahn.pos[1]*scale + (diameter/2))*-1), diameter, diameter);
         g2.fillOval((int)(Kugelbahn.pos[0]*scale - radius) ,(int)((Kugelbahn.pos[1]*scale - radius)), diameter, diameter);
-
         g2.dispose();
     }
 

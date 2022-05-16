@@ -39,6 +39,7 @@ public class Kugelbahn {
 
         sy = pos[1] + vel[1]*t + (0.5*ay*Math.pow(t, 2));
 
+
     }
     static double aHang;
     static double aNormal;
@@ -81,6 +82,9 @@ public class Kugelbahn {
 
         pos[0] = sx;
         pos[1] = sy;
+
+        Main.updateCoordinate();
+
     }
 
     static Line line1 = new Line(5, 25, 10, 30);
