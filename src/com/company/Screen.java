@@ -19,8 +19,8 @@ public class Screen extends JPanel implements Runnable {
     Thread thread;
 
     static Line lines[] = {
-            new Line(0,20,5,35),
-            new Line(15,40,40,30),
+            //new Line(5,30,50,70),
+            //new Line(20,30,50,20)
             //new Line(0, Screen.width/ Screen.scale,45,45)
     };
 
@@ -93,21 +93,21 @@ public class Screen extends JPanel implements Runnable {
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D)g;
-
+        /*
         g2.setColor(Color.white);
 
         g2.setColor(Color.white);
         g2.drawLine(lines[0].getX0() * scale, lines[0].getY0() * scale, lines[0].getX1() * scale, lines[0].getY1() * scale);
 
         g2.setColor(Color.blue);
-        g2.drawLine(lines[1].getX0() * scale, lines[1].getY0() * scale, lines[1].getX1() * scale, lines[1].getY1() * scale);
+        //g2.drawLine(lines[1].getX0() * scale, lines[1].getY0() * scale, lines[1].getX1() * scale, lines[1].getY1() * scale);
 
         g2.setColor(Color.cyan);
         //g2.drawLine(lines[2].getX0() * scale, lines[2].getY0() * scale, lines[2].getX1() * scale, lines[2].getY1() * scale);
+        */
 
-        //g2.drawLine(Kugelbahn.line1.getX0() * scale, Kugelbahn.line1.getY0() * scale, Kugelbahn.line1.getX1() * scale, Kugelbahn.line1.getY1() * scale );
+        g2.drawLine(Kugelbahn.line1.getX0() * scale, Kugelbahn.line1.getY0() * scale, Kugelbahn.line1.getX1() * scale, Kugelbahn.line1.getY1() * scale );
         g2.setColor(Color.blue);
-
         //Zeichnen der Kugel
         //g2.fillOval((int)(Kugelbahn.pos[0]*scale - (diameter/2)) ,(int)((Kugelbahn.pos[1]*scale + (diameter/2))*-1), diameter, diameter);
         g2.fillOval((int)(Kugelbahn.pos[0]*scale - radius) ,(int)((Kugelbahn.pos[1]*scale - radius)), diameter, diameter);

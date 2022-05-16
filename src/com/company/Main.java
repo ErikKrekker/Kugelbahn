@@ -15,7 +15,6 @@ public class Main {
     //y-richtung anpassen -> wie in echt
     public static void main(String[] args) {
 
-        Kugelbahn.createLines();
 
         JFrame window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -175,6 +174,7 @@ public class Main {
         double windX = Double.parseDouble(windx_val.getText());
         double windY = Double.parseDouble(windy_val.getText());
 
+        Kugelbahn.rollen = false;
 
         Kugelbahn.pos[0] = positionX;
         Kugelbahn.pos[1] = positionY;
