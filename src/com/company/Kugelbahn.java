@@ -189,7 +189,8 @@ public class Kugelbahn {
 
         public static void vectorZerlegung () {
 
-            skalar = ((-ballVekX) * (line1.getX1() - line1.getX0()) + (-ballVekY) * (line1.getY1() - line1.getY0())) / (Math.pow((line1.getX1() - line1.getX0()), 2) + Math.pow((line1.getY1() - line1.getY0()), 2));
+            skalar = ((-ballVekX) * (line1.getX1() - line1.getX0()) + (-ballVekY) * (line1.getY1() - line1.getY0())) /
+                    (Math.pow((line1.getX1() - line1.getX0()), 2) + Math.pow((line1.getY1() - line1.getY0()), 2));
 
             //Projektion des Richtungsvektors auf den Richtungsvektor der Geraden
             vProjektionX = skalar * (line1.getX1() - line1.getX0());

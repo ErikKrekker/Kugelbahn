@@ -117,7 +117,7 @@ public class Screen extends JPanel implements Runnable {
     //schaut, ob die Kugel an den Seiten bzw. unten aus dem Bild fliegt
     public void checkBounds(){
 
-        if((int)(Kugelbahn.pos[0]*scale - radius) >= width || (int)(Kugelbahn.pos[0]*scale + radius) < 0 || (int)(Kugelbahn.pos[1]*scale + radius) >= height){
+        if((int)(Kugelbahn.pos[0]*scale - radius) >= width || (int)(Kugelbahn.pos[0]*scale + radius) < 0 || (int)(Kugelbahn.pos[1]*scale - radius) >= height){
             outOfBounds = true;
             System.out.println("--------ENDE---------");
         }
