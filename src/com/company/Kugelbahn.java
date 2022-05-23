@@ -1,18 +1,15 @@
 package com.company;
 
 public class Kugelbahn {
-    static double v0, s0, vx, vy, sx, sy, ax, ay;
+    static double vx, vy, sx, sy, ax, ay;
     static double vel[] = new double[2];
     static double pos[] = new double[2];
     static double gravity[] = new double[2];
     static double wind[] = new double[2];
     static Line lines[] = new Line[3];
 
-    static boolean falling = true;
     static boolean rollen = false;
     static double d = Double.POSITIVE_INFINITY;
-
-    static double heightLoss = 0.47;
 
     static double temp;
     static boolean collision = true;
@@ -37,21 +34,19 @@ public class Kugelbahn {
     static double normalizeProjektion;
 
     static double ballVekX; //Richtungsvektor der Kugel
-    static double ballVekY; //
+    static double ballVekY;
 
     static double angle;    //Auftreffwinkel Gerade und Kugel
 
 
-    static Line line1 = new Line(5, 30, 20, 30);
+    static Line line1 = new Line(10, 30, 30, 30);
+    static double heightLoss = 0.47;
 
     //führt alle Berechnungnen in richitger Reihenfolge aus
     public static void calc(double t) {
-
         calcAcceleration();
         calcVelocity(t);
         calcPosition(t);
-
-        checkDirection();
 
         m = ((double) line1.getY1() - (double) line1.getY0()) / ((double) line1.getX1() - (double) line1.getX0());
 
@@ -72,27 +67,41 @@ public class Kugelbahn {
         sy = pos[1] + vel[1] * t + (0.5 * ay * Math.pow(t, 2));
 
     }
-
+    static double arx, ary;
+    static double ahx, ahy;
     public static void calcAcceleration() {
         if (!rollen) {
             ax = gravity[0] + wind[0];
 
             ay = gravity[1] + wind[1];
+
         } else if (rollen) {
-            aHang = Math.abs(gravity[1]) * Math.sin(Math.atan((m)));
-            aNormal = Math.abs(gravity[1]) * Math.cos(Math.atan((m)));
-            aReib = Math.abs(aNormal) * 0.15;
+            aHang = Math.abs(gravity[1] * Math.sin(Math.atan((m))));
+            aNormal = Math.abs(gravity[1] * Math.cos(Math.atan((m))));
+            aReib = Math.abs(aNormal) * 0.2;                                //Gleitreibung Holz auf Holz
+            ahx = Math.abs((vProjektionX / normalizeProjektion) * aHang);
+            ahy = Math.abs((vProjektionY / normalizeProjektion) * aHang);
+            arx = Math.abs((vProjektionX / normalizeProjektion) * aReib);
+            ary = Math.abs((vProjektionY / normalizeProjektion) * aReib);
             System.out.println();
-            if (aHang > aReib) {
-                ax = (vProjektionX / normalizeProjektion) * aHang;
+            if (m > 0 && aHang > aReib) {
+                ax = ahx - arx + wind[0];
 
-                ay = (vProjektionY / normalizeProjektion) * aHang;
+                ay = ahy - ary + wind[1];
+                //ax = gravity[1] * (Math.sin(Math.atan((m))) - (0.15 * Math.cos(Math.atan((m)))));
+
+                //ay = (vProjektionY / normalizeProjektion) * aHang;
+                System.out.println("hi");
             }
+
+            else if(m < 0 && aHang > aReib){
+                ax = -ahx + arx + wind[0];
+
+                ay = ahy + ary + wind[1];
+            }
+
             else {
-                ax = -(vProjektionX / normalizeProjektion) * aHang;
-
-                ay = -(vProjektionY / normalizeProjektion) * aHang;
-
+                System.out.println("Reibung zu groß");
             }
         }
     }
@@ -116,34 +125,57 @@ public class Kugelbahn {
             lines[2] = new Line(0, Screen.width / Screen.scale, 44, 44);
         }
 
+        static double k;
 
         public static void collisionCheck () {
 
             calcDistancePointLine(1);
+            checkDirection();
+            System.out.println("Abstand" + d);
+            System.out.println("Steigung" + m);
+            System.out.println("NormalenVektor [" + normX + "] [" + normY + "]" );
+
+            if (!collision && !rollen && d <= 0.6 && m == Double.POSITIVE_INFINITY && pos[1] >= line1.getY0() && pos[1] >= line1.getX1()){
+                System.out.println("dectected rejected");
+                vx = -(vx * heightLoss);
+                vy = vy * heightLoss;
+            }
+            if (collision && !rollen && d <= 0.6 && m == Double.POSITIVE_INFINITY && pos[1] >= line1.getY0() && pos[1] >= line1.getX1()){
+                System.out.println("dectected rejected");
+                vx = -vx;
+                vy = vy * heightLoss;
+            }
 
             //Kugel trifft von oben auf die Gerade
-            if (dotP < 0 && collision && !rollen && d <= 0.5 && pos[0] >= line1.getX0() && pos[0] <= line1.getX1()) {
+            if (dotP < 0 && collision && !rollen && d <= 0.6 && pos[0] >= line1.getX0() && pos[0] <= line1.getX1()) {
                 calcAngle();
                 vectorZerlegung();
 
-                if (vectorLength(vParallelX, vParallelY) <= 0.5) {
-                    System.out.println(vectorLength(vParallelX, vParallelY));
-                    rollen = true;
-                    vx = (vProjektionX / normalizeProjektion);
-                    vy = (vProjektionY / normalizeProjektion);
-                    System.out.println("Bin am rollen");
-                } else {
-                    vy = -(heightLoss * (vy + 2 * (vy * (normX / normalizeNorm) + vx * (normY / normalizeNorm)) * (normX / normalizeNorm)));
-                    vx = -(heightLoss * (vx - 2 * (vy * (normX / normalizeNorm) + vx * (normY / normalizeNorm)) * (normY / normalizeNorm)));
-
+                if (m == 0){
+                    vx = vx * heightLoss;
+                    vy = -(vy * heightLoss);
+                }
+                    else {
+                     if (vectorLength(tempvParallelX, tempvParallelY) <= 2) {
+                        System.out.println(vectorLength(tempvParallelX, tempvParallelY));
+                        rollen = true;
+                        //vx = 0;
+                        //vy = 0;
+                        System.out.println("Bin am rollen");
+                    } else {
+                        //https://math.stackexchange.com/questions/3301455/reflect-a-2d-vector-over-another-vector-without-using-normal-why-this-gives-the
+                        calcReflectingVector();
+                    }
                 }
             }
-            //Kugel trifft von unten auf die Gerade
-            else if (dotP > 0 && !collision && d <= 0.5 && pos[0] >= line1.getX0() && pos[0] <= line1.getX1()) {
 
-                vy = -(heightLoss * (vy + 2 * (vy * (normX / normalizeNorm) + vx * (normY / normalizeNorm)) * (normX / normalizeNorm)));
-                vx = -(heightLoss * (vx - 2 * (vy * (normX / normalizeNorm) + vx * (normY / normalizeNorm)) * (normY / normalizeNorm)));
-            } else if (rollen && (pos[0] <= line1.getX0() || pos[0] >= line1.getX1())) {
+            //Kugel trifft von unten auf die Gerade
+            else if (dotP > 0 && !collision && d <= 0.6 && pos[0] >= line1.getX0() && pos[0] <= line1.getX1()) {
+
+                calcReflectingVector();
+
+            }
+            else if (rollen && (pos[0] <= line1.getX0() || pos[0] >= line1.getX1())) {
                 rollen = false;
                 System.out.println("fliege wieder");
             }
@@ -179,31 +211,34 @@ public class Kugelbahn {
         //Berechnet Winkel zw Normalenvektor der Geraden & Richtungsvektor der Kugel
         public static void calcAngle () {
 
-            ballVekX = -1 * (vx - vel[0]);
-            ballVekY = -1 * (vy - vel[1]);
+            //ballVekX = -1 * (vx - vel[0]);
+            //ballVekY = -1 * (vy - vel[1]);
 
-            angle = Math.acos((ballVekX * normX + ballVekY * normY) / (vectorLength(ballVekX, ballVekY) * vectorLength(normX, normY)));
+            //angle = Math.acos((ballVekX * normX + ballVekY * normY) / (vectorLength(ballVekX, ballVekY) * vectorLength(normX, normY)));
 
-            System.out.println("Winkel: " + angle);
         }
 
         public static void vectorZerlegung () {
-
+            /*
             skalar = ((-ballVekX) * (line1.getX1() - line1.getX0()) + (-ballVekY) * (line1.getY1() - line1.getY0())) /
                     (Math.pow((line1.getX1() - line1.getX0()), 2) + Math.pow((line1.getY1() - line1.getY0()), 2));
+            */
 
-            //Projektion des Richtungsvektors auf den Richtungsvektor der Geraden
+            skalar = (vx * (line1.getX1() - line1.getX0()) + vy * (line1.getY1() - line1.getY0())) /
+                    (Math.pow((line1.getX1() - line1.getX0()), 2) + Math.pow((line1.getY1() - line1.getY0()), 2));
+
+            //Projektion des Richtungsvektors der Kugel auf die Gerade
             vProjektionX = skalar * (line1.getX1() - line1.getX0());
             vProjektionY = skalar * (line1.getY1() - line1.getY0());
 
             normalizeProjektion = vectorLength(vProjektionX, vProjektionY);
 
             //Paralleler Anteil der Zerlegung -> Wird für Entscheidung ob rollen oder springen gebraucht
-            tempvParallelX = -(ballVekX) - vProjektionX;
-            tempvParallelY = -(ballVekY) - vProjektionY;
-
-            vParallelX = vel[0] * (tempvParallelX / (vectorLength(tempvParallelX, tempvParallelY)));
-            vParallelY = vel[1] * (tempvParallelY / (vectorLength(tempvParallelX, tempvParallelY)));
+            tempvParallelX = vx - vProjektionX;
+            tempvParallelY = vy - vProjektionY;
+            System.out.println();
+            //vParallelX = vel[0] * (tempvParallelX / (vectorLength(tempvParallelX, tempvParallelY)));
+            //vParallelY = vel[1] * (tempvParallelY / (vectorLength(tempvParallelX, tempvParallelY)));
         }
 
         public static double vectorLength ( double x, double y){
@@ -222,7 +257,16 @@ public class Kugelbahn {
                 collision = true;
             else if (temp > 0)
                 collision = false;
-            else if (temp == 0)
-                collision = true;
+            else
+                rollen = true;
+        }
+
+        public static void calcReflectingVector(){
+            //Faktor für die Projektion des Richtungsvektor der Kugel auf die Gerade
+            k = (vx * (line1.getX1() - line1.getX0()) + vy * (line1.getY1() - line1.getY0())) / (Math.pow(line1.getX1() - line1.getX0(), 2) + Math.pow(line1.getY1() - line1.getY0(), 2));
+
+            vx = heightLoss * (-vx + (2*k*(line1.getX1() - line1.getX0())));
+            vy = heightLoss * (-vy + (2*k*(line1.getY1() - line1.getY0())));
+
         }
     }

@@ -108,6 +108,9 @@ public class Screen extends JPanel implements Runnable {
 
         g2.drawLine(Kugelbahn.line1.getX0() * scale, Kugelbahn.line1.getY0() * scale, Kugelbahn.line1.getX1() * scale, Kugelbahn.line1.getY1() * scale );
         g2.setColor(Color.blue);
+
+        g2.drawLine((int)(Kugelbahn.pos[0] * scale), (int)(Kugelbahn.pos[1] * scale), (int)((Kugelbahn.pos[0] + Kugelbahn.vel[0]) * scale), (int)((Kugelbahn.pos[1] + Kugelbahn.vel[1]) * scale));
+        g2.setColor(Color.green);
         //Zeichnen der Kugel
         //g2.fillOval((int)(Kugelbahn.pos[0]*scale - (diameter/2)) ,(int)((Kugelbahn.pos[1]*scale + (diameter/2))*-1), diameter, diameter);
         g2.fillOval((int)(Kugelbahn.pos[0]*scale - radius) ,(int)((Kugelbahn.pos[1]*scale - radius)), diameter, diameter);
