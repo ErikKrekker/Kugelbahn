@@ -97,10 +97,19 @@ public class Main {
         windy_val.setText(String.valueOf(Kugelbahn.wind[1]));
         screen.add(windy_val);
 
+
+
         currentCoordinate.setBounds(780, 540, 190, 25);
         screen.add(currentCoordinate);
 
         Screen field = new Screen();
+
+
+        JSlider lineTilt = new JSlider(JSlider.HORIZONTAL,0,360,0);
+        lineTilt.setBounds(780, 500, 180, 25);
+        lineTilt.addChangeListener(e -> tilt(field,windy_val, lineTilt));
+        screen.add(lineTilt);
+
 
         field.setBounds(0, 0, Screen.width, Screen.height);
         field.setBackground(Color.pink);
@@ -142,6 +151,12 @@ public class Main {
         window.setLocationRelativeTo(null);
         window.setVisible(true);
 
+    }
+
+    public static void tilt(Screen field, JTextField windy_val, JSlider tilt_val){
+        windy_val.setText(Double.toString(tilt_val.getValue()));
+        Screen.degree = tilt_val.getValue();
+        field.repaint();
     }
 
     public static void programmstart(Screen field, JButton start,JButton update) {
