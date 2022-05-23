@@ -97,6 +97,14 @@ public class Main {
         windy_val.setText(String.valueOf(Kugelbahn.wind[1]));
         screen.add(windy_val);
 
+        JLabel geschwindigkeit_val = new JLabel("Geschwindigkeit : ");
+        geschwindigkeit_val.setBounds(780, 420, 180, 25);
+        screen.add(geschwindigkeit_val);
+
+        JLabel rotation_val = new JLabel("Rotation : ");
+        rotation_val.setBounds(780, 460, 120, 25);
+        screen.add(rotation_val);
+
 
 
         currentCoordinate.setBounds(780, 540, 190, 25);
@@ -107,7 +115,7 @@ public class Main {
 
         JSlider lineTilt = new JSlider(JSlider.HORIZONTAL,0,360,0);
         lineTilt.setBounds(780, 500, 180, 25);
-        lineTilt.addChangeListener(e -> tilt(field,windy_val, lineTilt));
+        lineTilt.addChangeListener(e -> tilt(field,rotation_val, lineTilt));
         screen.add(lineTilt);
 
 
@@ -153,11 +161,20 @@ public class Main {
 
     }
 
-    public static void tilt(Screen field, JTextField windy_val, JSlider tilt_val){
-        windy_val.setText(Double.toString(tilt_val.getValue()));
+    public static void tilt(Screen field, JLabel rotation_val, JSlider tilt_val){
+
+        int rotation_pos = tilt_val.getValue();
+
+        rotation_val.setText("Rotation : " + Double.toString(tilt_val.getValue()));
         Screen.degree = tilt_val.getValue();
         field.repaint();
+
     }
+
+    public static void dragline(){
+
+    }
+
 
     public static void programmstart(Screen field, JButton start,JButton update) {
 
