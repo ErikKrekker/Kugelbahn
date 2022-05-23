@@ -13,7 +13,6 @@ public class Kugelbahn {
 
     static double temp;
     static boolean collision = true;
-    static double m;    //Steigung der Geraden
     private static double vrelX, vrelY; //Relative Geschwindigkeit der Kugel zu der Geraden
 
     static double aHang;
@@ -35,20 +34,19 @@ public class Kugelbahn {
 
     static double ballVekX; //Richtungsvektor der Kugel
     static double ballVekY;
-
     static double angle;    //Auftreffwinkel Gerade und Kugel
 
 
-    static Line line1 = new Line(10, 30, 30, 30);
-    static double heightLoss = 0.47;
+    static Line line1 = new Line(0, 70, 50, 63);
+    static double m = ((double) line1.getY1() - (double) line1.getY0()) / ((double) line1.getX1() - (double) line1.getX0()); //Steigung der Geraden
+
+    static double heightLoss = 0.47; //Kugel fliegt auch Holzplatte
 
     //führt alle Berechnungnen in richitger Reihenfolge aus
     public static void calc(double t) {
         calcAcceleration();
         calcVelocity(t);
         calcPosition(t);
-
-        m = ((double) line1.getY1() - (double) line1.getY0()) / ((double) line1.getX1() - (double) line1.getX0());
 
         collisionCheck();
         updateVelDis();
@@ -78,26 +76,22 @@ public class Kugelbahn {
         } else if (rollen) {
             aHang = Math.abs(gravity[1] * Math.sin(Math.atan((m))));
             aNormal = Math.abs(gravity[1] * Math.cos(Math.atan((m))));
-            aReib = Math.abs(aNormal) * 0.2;                                //Gleitreibung Holz auf Holz
-            ahx = Math.abs((vProjektionX / normalizeProjektion) * aHang);
-            ahy = Math.abs((vProjektionY / normalizeProjektion) * aHang);
-            arx = Math.abs((vProjektionX / normalizeProjektion) * aReib);
-            ary = Math.abs((vProjektionY / normalizeProjektion) * aReib);
+            aReib = Math.abs(aNormal) * 0.035;                                //Reifen auf schlechter Straße
+            ahx = Math.abs(vProjektionX * aHang);   //Hangabtriebsbeschleunigung
+            ahy = Math.abs(vProjektionY * aHang);
+            arx = Math.abs(vProjektionX * aReib);   //Reibungsbeschleunigung
+            ary = Math.abs(vProjektionY * aReib);
             System.out.println();
             if (m > 0 && aHang > aReib) {
                 ax = ahx - arx + wind[0];
 
                 ay = ahy - ary + wind[1];
-                //ax = gravity[1] * (Math.sin(Math.atan((m))) - (0.15 * Math.cos(Math.atan((m)))));
-
-                //ay = (vProjektionY / normalizeProjektion) * aHang;
-                System.out.println("hi");
             }
 
             else if(m < 0 && aHang > aReib){
                 ax = -ahx + arx + wind[0];
 
-                ay = ahy + ary + wind[1];
+                ay = ahy - ary + wind[1];
             }
 
             else {
@@ -131,41 +125,43 @@ public class Kugelbahn {
 
             calcDistancePointLine(1);
             checkDirection();
-            System.out.println("Abstand" + d);
-            System.out.println("Steigung" + m);
-            System.out.println("NormalenVektor [" + normX + "] [" + normY + "]" );
+            //System.out.println("Abstand" + d);
+            //System.out.println("Steigung" + m);
+            //System.out.println("NormalenVektor [" + normX + "] [" + normY + "]" );
+            System.out.println("Geschwindigkeit [" + vel[0] + "] [" + vel[1] + "]" );
 
             if (!collision && !rollen && d <= 0.6 && m == Double.POSITIVE_INFINITY && pos[1] >= line1.getY0() && pos[1] >= line1.getX1()){
-                System.out.println("dectected rejected");
+
                 vx = -(vx * heightLoss);
                 vy = vy * heightLoss;
             }
             if (collision && !rollen && d <= 0.6 && m == Double.POSITIVE_INFINITY && pos[1] >= line1.getY0() && pos[1] >= line1.getX1()){
-                System.out.println("dectected rejected");
+
                 vx = -vx;
                 vy = vy * heightLoss;
             }
 
             //Kugel trifft von oben auf die Gerade
             if (dotP < 0 && collision && !rollen && d <= 0.6 && pos[0] >= line1.getX0() && pos[0] <= line1.getX1()) {
-                calcAngle();
                 vectorZerlegung();
 
                 if (m == 0){
-                    vx = vx * heightLoss;
-                    vy = -(vy * heightLoss);
+                        vx = vx * heightLoss;
+                        vy = -(vy * heightLoss);
                 }
                     else {
-                     if (vectorLength(tempvParallelX, tempvParallelY) <= 2) {
-                        System.out.println(vectorLength(tempvParallelX, tempvParallelY));
-                        rollen = true;
-                        //vx = 0;
-                        //vy = 0;
-                        System.out.println("Bin am rollen");
-                    } else {
-                        //https://math.stackexchange.com/questions/3301455/reflect-a-2d-vector-over-another-vector-without-using-normal-why-this-gives-the
-                        calcReflectingVector();
-                    }
+                        //Annahme: Kugelmasse = 200g -> Fg = 1,962 und die Absprungskraft muss größer als Fg sein
+                         if (vectorLength(tempvParallelX, tempvParallelY) <= 2) {
+                             vectorZerlegung();
+                            System.out.println(vectorLength(tempvParallelX, tempvParallelY));
+                            rollen = true;
+                            vx = vProjektionX;
+                            vy = vProjektionY;
+                            System.out.println("Bin am rollen");
+                        } else {
+                            //https://math.stackexchange.com/questions/3301455/reflect-a-2d-vector-over-another-vector-without-using-normal-why-this-gives-the
+                            calcReflectingVector();
+                        }
                 }
             }
 
@@ -208,15 +204,18 @@ public class Kugelbahn {
 
         }
 
+        /*
         //Berechnet Winkel zw Normalenvektor der Geraden & Richtungsvektor der Kugel
         public static void calcAngle () {
 
-            //ballVekX = -1 * (vx - vel[0]);
-            //ballVekY = -1 * (vy - vel[1]);
+            ballVekX = -1 * (vx - vel[0]);
+            ballVekY = -1 * (vy - vel[1]);
 
-            //angle = Math.acos((ballVekX * normX + ballVekY * normY) / (vectorLength(ballVekX, ballVekY) * vectorLength(normX, normY)));
+            angle = Math.acos((ballVekX * normX + ballVekY * normY) / (vectorLength(ballVekX, ballVekY) * vectorLength(normX, normY)));
 
         }
+        */
+
 
         public static void vectorZerlegung () {
             /*
