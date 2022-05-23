@@ -223,8 +223,6 @@ public class Main {
 
     public static void placeball(int posx_val, int posy_val, JLabel currentCoordinate, Screen field, JTextField posx_field, JTextField posy_field){
 
-
-
         double positionX = posx_val;
         double positionY = posy_val;
 
