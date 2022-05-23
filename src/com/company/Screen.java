@@ -3,6 +3,8 @@ import java.awt.Color;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 
 public class Screen extends JPanel implements Runnable {
 
@@ -10,6 +12,8 @@ public class Screen extends JPanel implements Runnable {
 
     public static int width = 750;
     public static int height = 750;
+
+    static int degree = 18;
 
     static int diameter = 10;
     static int radius = diameter/2;
@@ -106,13 +110,21 @@ public class Screen extends JPanel implements Runnable {
         //g2.drawLine(lines[2].getX0() * scale, lines[2].getY0() * scale, lines[2].getX1() * scale, lines[2].getY1() * scale);
         */
 
+        Line2D line = new Line2D.Double(10 * scale,30 * scale,10 * scale,30 * scale);
+        //g2.draw(line);
+        AffineTransform at = AffineTransform.getRotateInstance(Math.toRadians(degree), line.getX1(), line.getY1());
+        g2.draw(at.createTransformedShape(line));
+        /*
         g2.drawLine(Kugelbahn.line1.getX0() * scale, Kugelbahn.line1.getY0() * scale, Kugelbahn.line1.getX1() * scale, Kugelbahn.line1.getY1() * scale );
         g2.setColor(Color.blue);
 
-        g2.drawLine((int)(Kugelbahn.pos[0] * scale), (int)(Kugelbahn.pos[1] * scale), (int)((Kugelbahn.pos[0] + Kugelbahn.vel[0]) * scale), (int)((Kugelbahn.pos[1] + Kugelbahn.vel[1]) * scale));
-        g2.setColor(Color.green);
+
+         */
+       // g2.drawLine((int)(Kugelbahn.pos[0] * scale), (int)(Kugelbahn.pos[1] * scale), (int)((Kugelbahn.pos[0] + Kugelbahn.vel[0]) * scale), (int)((Kugelbahn.pos[1] + Kugelbahn.vel[1]) * scale));
+
         //Zeichnen der Kugel
         //g2.fillOval((int)(Kugelbahn.pos[0]*scale - (diameter/2)) ,(int)((Kugelbahn.pos[1]*scale + (diameter/2))*-1), diameter, diameter);
+        g2.setColor(Color.green);
         g2.fillOval((int)(Kugelbahn.pos[0]*scale - radius) ,(int)((Kugelbahn.pos[1]*scale - radius)), diameter, diameter);
         g2.dispose();
     }
