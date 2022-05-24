@@ -12,6 +12,7 @@ public class Main {
     static int x;
     static int y;
     public static JLabel currentCoordinate = new JLabel("Current Coordinate: [" + Kugelbahn.pos[0] + ", " + Kugelbahn.pos[1] + "]");
+    public static JLabel geschwindigkeit_val = new JLabel("Geschwindigkeit : ");
     //y-richtung anpassen -> wie in echt
     public static void main(String[] args) {
 
@@ -97,7 +98,7 @@ public class Main {
         windy_val.setText(String.valueOf(Kugelbahn.wind[1]));
         screen.add(windy_val);
 
-        JLabel geschwindigkeit_val = new JLabel("Geschwindigkeit : ");
+
         geschwindigkeit_val.setBounds(780, 420, 180, 25);
         screen.add(geschwindigkeit_val);
 
@@ -173,6 +174,8 @@ public class Main {
 
     public static void dragline(){
 
+
+
     }
 
 
@@ -193,7 +196,11 @@ public class Main {
         update.setEnabled(true);
     }
 
+    public static void showvel(){
 
+        geschwindigkeit_val.setText("Geschwindigkeit : " + Math.round(Kugelbahn.vel[0]) + " , " + Math.round(Kugelbahn.vel[1]));
+
+    }
 
     public static void programmupdate(JTextField posx_val,JTextField posy_val, JTextField velx_val,JTextField vely_val, JTextField windx_val,JTextField windy_val,  Screen field) {
 

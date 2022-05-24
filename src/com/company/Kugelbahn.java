@@ -109,6 +109,7 @@ public class Kugelbahn {
             pos[1] = sy;
 
             Main.updateCoordinate();
+            Main.showvel();
 
         }
 
