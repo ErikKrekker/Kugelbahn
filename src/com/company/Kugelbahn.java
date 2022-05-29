@@ -32,15 +32,13 @@ public class Kugelbahn {
     static double tempvParallelX, tempvParallelY;
     static double normalizeProjektion;
 
-    static double ballVekX; //Richtungsvektor der Kugel
-    static double ballVekY;
     static double angle;    //Auftreffwinkel Gerade und Kugel
 
 
-    static Line line1 = new Line(0, 70, 50, 63);
+    static Line line1 = new Line(10, 30, 10, 10);
     static double m = ((double) line1.getY1() - (double) line1.getY0()) / ((double) line1.getX1() - (double) line1.getX0()); //Steigung der Geraden
 
-    static double heightLoss = 0.47; //Kugel fliegt auch Holzplatte
+    static double heightLoss = 0.4; //Kugel fliegt auch Holzplatte
 
     //führt alle Berechnungnen in richitger Reihenfolge aus
     public static void calc(double t) {
@@ -81,22 +79,50 @@ public class Kugelbahn {
             ahy = Math.abs(vProjektionY * aHang);
             arx = Math.abs(vProjektionX * aReib);   //Reibungsbeschleunigung
             ary = Math.abs(vProjektionY * aReib);
-            System.out.println();
-            if (m > 0 && aHang > aReib) {
-                ax = ahx - arx + wind[0];
 
-                ay = ahy - ary + wind[1];
+            if (m > 0 && vx < 0) {
+                ax = ahx + arx;
+
+                ay = ahy + ary;
             }
 
-            else if(m < 0 && aHang > aReib){
-                ax = -ahx + arx + wind[0];
+            else if (m > 0 && vx > 0) {
+                ax = ahx - arx;
 
-                ay = ahy - ary + wind[1];
+                ay = ahy - ary;
             }
 
-            else {
-                System.out.println("Reibung zu groß");
+            else if (m < 0 && vx > 0) {
+                ax = -ahx - arx;
+
+                ay = ahy + ary;
             }
+
+            else if (m < 0 && vx <0){
+                ax = -ahx + arx;
+
+                ay = ahy - ary;
+            }
+
+            else if (m == 0 && vx < 0){
+                ax = ahx + arx;
+
+                ay = ahy - ary;
+            }
+
+            else if (m == 0 && vx > 0){
+                ax = ahx - arx;
+
+                ay = ahy - ary;
+            }
+
+            //Kugel fällt auf eine waagerechte Linie
+            else if(m == 0 & vy >= 0){
+                ax = ahx - arx;
+
+                ay = ahy - ary;
+            }
+
         }
     }
 
@@ -121,7 +147,6 @@ public class Kugelbahn {
         }
 
         static double k;
-
         public static void collisionCheck () {
 
             calcDistancePointLine(1);
@@ -131,22 +156,27 @@ public class Kugelbahn {
             //System.out.println("NormalenVektor [" + normX + "] [" + normY + "]" );
             System.out.println("Geschwindigkeit [" + vel[0] + "] [" + vel[1] + "]" );
 
-            if (!collision && !rollen && d <= 0.6 && m == Double.POSITIVE_INFINITY && pos[1] >= line1.getY0() && pos[1] >= line1.getX1()){
+            //Kugel trifft von der linken Seite aus auf eine Wand
+            if (dotP > 0 && !collision && d <= 0.6 && m == Double.POSITIVE_INFINITY && pos[1] >= line1.getY0() && pos[1] <= line1.getY1()){
 
                 vx = -(vx * heightLoss);
                 vy = vy * heightLoss;
             }
-            if (collision && !rollen && d <= 0.6 && m == Double.POSITIVE_INFINITY && pos[1] >= line1.getY0() && pos[1] >= line1.getX1()){
 
-                vx = -vx;
+            //Kugel trifft von der rechten Seite aus auf eine Wand
+            if (dotP < 0 && collision && d <= 0.6 && m == Double.POSITIVE_INFINITY && pos[1] >= line1.getY0() && pos[1] <= line1.getY1()){
+
+                vx = -(vx * heightLoss);
                 vy = vy * heightLoss;
             }
+
+
 
             //Kugel trifft von oben auf die Gerade
             if (dotP < 0 && collision && !rollen && d <= 0.6 && pos[0] >= line1.getX0() && pos[0] <= line1.getX1()) {
                 vectorZerlegung();
 
-                if (m == 0){
+                if (m == 0 && vectorLength(tempvParallelX, tempvParallelY) >= 2){
                         vx = vx * heightLoss;
                         vy = -(vy * heightLoss);
                 }
@@ -172,6 +202,7 @@ public class Kugelbahn {
                 calcReflectingVector();
 
             }
+
             else if (rollen && (pos[0] <= line1.getX0() || pos[0] >= line1.getX1())) {
                 rollen = false;
                 System.out.println("fliege wieder");
@@ -196,6 +227,7 @@ public class Kugelbahn {
 
             d = Math.abs(((richtungX * normX + richtungY * normY) / Math.sqrt(Math.pow(normX, 2) + Math.pow(normY, 2))) - Screen.radius / Screen.scale);
 
+
             if (dotP > 0)
                 System.out.println("Der Punkt liegt unter der Linie");
             else if (dotP < 0)
@@ -219,10 +251,7 @@ public class Kugelbahn {
 
 
         public static void vectorZerlegung () {
-            /*
-            skalar = ((-ballVekX) * (line1.getX1() - line1.getX0()) + (-ballVekY) * (line1.getY1() - line1.getY0())) /
-                    (Math.pow((line1.getX1() - line1.getX0()), 2) + Math.pow((line1.getY1() - line1.getY0()), 2));
-            */
+          
 
             skalar = (vx * (line1.getX1() - line1.getX0()) + vy * (line1.getY1() - line1.getY0())) /
                     (Math.pow((line1.getX1() - line1.getX0()), 2) + Math.pow((line1.getY1() - line1.getY0()), 2));
@@ -237,8 +266,7 @@ public class Kugelbahn {
             tempvParallelX = vx - vProjektionX;
             tempvParallelY = vy - vProjektionY;
             System.out.println();
-            //vParallelX = vel[0] * (tempvParallelX / (vectorLength(tempvParallelX, tempvParallelY)));
-            //vParallelY = vel[1] * (tempvParallelY / (vectorLength(tempvParallelX, tempvParallelY)));
+
         }
 
         public static double vectorLength ( double x, double y){
