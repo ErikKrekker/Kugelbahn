@@ -22,10 +22,13 @@ public class Screen extends JPanel implements Runnable {
     static boolean outOfBounds = false;
     Thread thread;
 
+    //ACHTUNG BEI LINIENERSTELLUNG
+    //x0 muss immer kleiner als x1 sein
+
     static Line lines[] = {
-            //new Line(5,30,50,70),
-            //new Line(20,30,50,20)
-            //new Line(0, Screen.width/ Screen.scale,45,45)
+            new Line(5,35,10,70),
+            new Line(0,70,50,20),
+            new Line(0, Screen.width/ Screen.scale,70,70)
     };
 
     public Screen() {
@@ -34,7 +37,6 @@ public class Screen extends JPanel implements Runnable {
 
     //führt die run methode aus
     public void startThread(){
-
 
             thread = new Thread(this);
             thread.start();
@@ -56,8 +58,6 @@ public class Screen extends JPanel implements Runnable {
 
             update();
             //Startet paintComponent methode
-            //Kollision erkennung
-            //Handling -> weiter rollen oder abspringen -> neuer RIchtungsvektor
             repaint();
 
             try {
@@ -81,9 +81,9 @@ public class Screen extends JPanel implements Runnable {
     //startet Berechnungen mit vergangener Zeit
     public void update(){
         checkBounds();
-        if(outOfBounds == false){
+        if(!outOfBounds){
             Kugelbahn.calc(1/FPS);
-        }else if(outOfBounds == true){
+        }else if(outOfBounds){
             outOfBounds = false;
             JOptionPane.showMessageDialog(null, "Durchlauf beendet" +"\n" + "'Update Kugel' drücken zur Vorbereitung eines weiteren Durchlaufes");
             thread.stop();
@@ -97,29 +97,23 @@ public class Screen extends JPanel implements Runnable {
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D)g;
-        /*
-        g2.setColor(Color.white);
 
         g2.setColor(Color.white);
         g2.drawLine(lines[0].getX0() * scale, lines[0].getY0() * scale, lines[0].getX1() * scale, lines[0].getY1() * scale);
 
         g2.setColor(Color.blue);
-        //g2.drawLine(lines[1].getX0() * scale, lines[1].getY0() * scale, lines[1].getX1() * scale, lines[1].getY1() * scale);
+        g2.drawLine(lines[1].getX0() * scale, lines[1].getY0() * scale, lines[1].getX1() * scale, lines[1].getY1() * scale);
 
         g2.setColor(Color.cyan);
-        //g2.drawLine(lines[2].getX0() * scale, lines[2].getY0() * scale, lines[2].getX1() * scale, lines[2].getY1() * scale);
-        */
+        g2.drawLine(lines[2].getX0() * scale, lines[2].getY0() * scale, lines[2].getX1() * scale, lines[2].getY1() * scale);
+
 
         //Line2D line = new Line2D.Double(10 * scale,30 * scale,10 * scale,30 * scale);
         //g2.draw(line);
         //AffineTransform at = AffineTransform.getRotateInstance(Math.toRadians(degree), line.getX1(), line.getY1());
         //g2.draw(at.createTransformedShape(line));
 
-        g2.drawLine(Kugelbahn.line1.getX0() * scale, Kugelbahn.line1.getY0() * scale, Kugelbahn.line1.getX1() * scale, Kugelbahn.line1.getY1() * scale );
-        g2.setColor(Color.blue);
-
-
-
+        //Geschwindigkeitsvektor der Kugel
         g2.drawLine((int)(Kugelbahn.pos[0] * scale), (int)(Kugelbahn.pos[1] * scale), (int)((Kugelbahn.pos[0] + Kugelbahn.vel[0]) * scale), (int)((Kugelbahn.pos[1] + Kugelbahn.vel[1]) * scale));
 
         //Zeichnen der Kugel

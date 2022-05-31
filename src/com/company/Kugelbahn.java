@@ -8,17 +8,13 @@ public class Kugelbahn {
     static double wind[] = new double[2];
     static Line lines[] = new Line[3];
 
-    static boolean rollen = false;
-    static double d = Double.POSITIVE_INFINITY;
-
-    static double temp;
-    static boolean collision = true;
     private static double vrelX, vrelY; //Relative Geschwindigkeit der Kugel zu der Geraden
 
     static double aHang;
     static double aNormal;
     static double aReib;
 
+    static double temp;
     static double dotP;         //Skalarprodukt von (Kugel zu Linie & Normalenvektor der Geraden) zum schauen, ob Kugel über oder unterhalb der Linie liegt
     static double normX, normY; //Richtungsvektor der Geraden
     static double normalizeNorm; //laenge des Normalenvektors zur Normierung
@@ -32,12 +28,16 @@ public class Kugelbahn {
     static double tempvParallelX, tempvParallelY;
     static double normalizeProjektion;
 
-    static double angle;    //Auftreffwinkel Gerade und Kugel
+    static double arx, ary;
+    static double ahx, ahy;
+    static int rollOn; //Linie auf der die Kugel rollt
 
+    static int closest;
 
-    static Line line1 = new Line(10, 30, 10, 10);
-    static double m = ((double) line1.getY1() - (double) line1.getY0()) / ((double) line1.getX1() - (double) line1.getX0()); //Steigung der Geraden
+    static boolean rollen = false;
+    static boolean collision = true;
 
+    static double d = Double.POSITIVE_INFINITY;
     static double heightLoss = 0.4; //Kugel fliegt auch Holzplatte
 
     //führt alle Berechnungnen in richitger Reihenfolge aus
@@ -46,7 +46,10 @@ public class Kugelbahn {
         calcVelocity(t);
         calcPosition(t);
 
-        collisionCheck();
+        for(int i = 0; i<Screen.lines.length; i++) {
+            collisionCheck(i);
+        }
+
         updateVelDis();
     }
 
@@ -63,8 +66,7 @@ public class Kugelbahn {
         sy = pos[1] + vel[1] * t + (0.5 * ay * Math.pow(t, 2));
 
     }
-    static double arx, ary;
-    static double ahx, ahy;
+
     public static void calcAcceleration() {
         if (!rollen) {
             ax = gravity[0] + wind[0];
@@ -72,13 +74,29 @@ public class Kugelbahn {
             ay = gravity[1] + wind[1];
 
         } else if (rollen) {
+
+            double m = ((double) Screen.lines[rollOn].getY1() - (double) Screen.lines[rollOn].getY0()) / ((double) Screen.lines[rollOn].getX1() - (double) Screen.lines[rollOn].getX0());
+
             aHang = Math.abs(gravity[1] * Math.sin(Math.atan((m))));
             aNormal = Math.abs(gravity[1] * Math.cos(Math.atan((m))));
-            aReib = Math.abs(aNormal) * 0.035;                                //Reifen auf schlechter Straße
-            ahx = Math.abs(vProjektionX * aHang);   //Hangabtriebsbeschleunigung
-            ahy = Math.abs(vProjektionY * aHang);
-            arx = Math.abs(vProjektionX * aReib);   //Reibungsbeschleunigung
-            ary = Math.abs(vProjektionY * aReib);
+            aReib = Math.abs(aNormal) * 0.035;//Reifen auf schlechter Straße
+
+            //Verhindert das Teilen durch 0, welches bei einer Steigung von 0 Auftritt fuer (vProjektionX/normalizeProjektion) berechnung
+            if(m == 0){
+                ahx = Math.abs(0 * aHang);
+                arx = Math.abs(aReib);
+
+                ahy = Math.abs(0 * aHang);
+                ary = Math.abs(0 * aReib);
+
+            }
+            else{
+                ahx = Math.abs((vProjektionX/normalizeProjektion) * aHang);   //Hangabtriebsbeschleunigung
+                arx = Math.abs((vProjektionX/normalizeProjektion) * aReib);
+
+                ahy = Math.abs((vProjektionY/normalizeProjektion) * aHang);
+                ary = Math.abs((vProjektionY/normalizeProjektion) * aReib);
+            }
 
             if (m > 0 && vx < 0) {
                 ax = ahx + arx;
@@ -90,6 +108,7 @@ public class Kugelbahn {
                 ax = ahx - arx;
 
                 ay = ahy - ary;
+                System.out.println();
             }
 
             else if (m < 0 && vx > 0) {
@@ -109,19 +128,20 @@ public class Kugelbahn {
 
                 ay = ahy - ary;
             }
-
             else if (m == 0 && vx > 0){
                 ax = ahx - arx;
 
                 ay = ahy - ary;
+                System.out.println();
             }
 
-            //Kugel fällt auf eine waagerechte Linie
-            else if(m == 0 & vy >= 0){
-                ax = ahx - arx;
+            //Kugel fällt senkrecht auf Gerade
+            else if (m == 0 && vx == 0){
+                ax = ahx + arx;
 
-                ay = ahy - ary;
+                ay = 0;
             }
+
 
         }
     }
@@ -138,133 +158,138 @@ public class Kugelbahn {
 
         }
 
-        public static void createLines () {
-
-            lines[0] = new Line(24, 60, 30, 50);
-            lines[1] = new Line(0, 17, 40, 30);
-            lines[2] = new Line(0, Screen.width / Screen.scale, 44, 44);
-        }
-
         static double k;
-        public static void collisionCheck () {
+        public static void collisionCheck (int i) {
 
-            calcDistancePointLine(1);
-            checkDirection();
+                calcDistancePointLine(i);
+                checkDirection();
+
+            double m = ((double) Screen.lines[closest].getY1() - (double) Screen.lines[closest].getY0()) / ((double) Screen.lines[closest].getX1() - (double) Screen.lines[closest].getX0());
+
             //System.out.println("Abstand" + d);
             //System.out.println("Steigung" + m);
             //System.out.println("NormalenVektor [" + normX + "] [" + normY + "]" );
-            System.out.println("Geschwindigkeit [" + vel[0] + "] [" + vel[1] + "]" );
+            //System.out.println("Geschwindigkeit [" + vx + "] [" + vy + "]" );
+            //System.out.println("Die nähste linie ist: " + closest);
+
 
             //Kugel trifft von der linken Seite aus auf eine Wand
-            if (dotP > 0 && !collision && d <= 0.6 && m == Double.POSITIVE_INFINITY && pos[1] >= line1.getY0() && pos[1] <= line1.getY1()){
+            /*
+            if (dotP > 0 && !collision && !rollen && d_closest <= 0.6 && pos[1] >= Screen.lines[closest].getY0() && pos[1] <= Screen.lines[closest].getY1()){
 
                 vx = -(vx * heightLoss);
                 vy = vy * heightLoss;
             }
 
             //Kugel trifft von der rechten Seite aus auf eine Wand
-            if (dotP < 0 && collision && d <= 0.6 && m == Double.POSITIVE_INFINITY && pos[1] >= line1.getY0() && pos[1] <= line1.getY1()){
+            if (dotP < 0 && collision && !rollen && d_closest <= 0.6 && pos[1] >= Screen.lines[closest].getY0() && pos[1] <= Screen.lines[closest].getY1()){
 
                 vx = -(vx * heightLoss);
                 vy = vy * heightLoss;
             }
+            */
 
 
+            //Kugel befindest sich oberhalb der Geraden, Normalenvektor der geraden & Richtungsvektor der Kugel gehen aufeinander zu, Kugel befindet sich zwischen Start / Endpunkt der Geraden
+            if (dotP < 0 && collision && !rollen && d <= 0.6 && pos[0] >= Screen.lines[closest].getX0() && pos[0] <= Screen.lines[closest].getX1()) {
+                vectorZerlegung(closest);
 
-            //Kugel trifft von oben auf die Gerade
-            if (dotP < 0 && collision && !rollen && d <= 0.6 && pos[0] >= line1.getX0() && pos[0] <= line1.getX1()) {
-                vectorZerlegung();
-
+                //Abspringen auf einer waagerechten Gerade
                 if (m == 0 && vectorLength(tempvParallelX, tempvParallelY) >= 2){
-                        vx = vx * heightLoss;
-                        vy = -(vy * heightLoss);
+                    vx = vx * heightLoss;
+                    vy = -(vy * heightLoss);
                 }
                     else {
                         //Annahme: Kugelmasse = 200g -> Fg = 1,962 und die Absprungskraft muss größer als Fg sein
                          if (vectorLength(tempvParallelX, tempvParallelY) <= 2) {
-                             vectorZerlegung();
                             System.out.println(vectorLength(tempvParallelX, tempvParallelY));
                             rollen = true;
+                            rollOn = closest;
                             vx = vProjektionX;
                             vy = vProjektionY;
                             System.out.println("Bin am rollen");
                         } else {
                             //https://math.stackexchange.com/questions/3301455/reflect-a-2d-vector-over-another-vector-without-using-normal-why-this-gives-the
-                            calcReflectingVector();
+                            calcReflectingVector(closest);
                         }
                 }
             }
 
             //Kugel trifft von unten auf die Gerade
-            else if (dotP > 0 && !collision && d <= 0.6 && pos[0] >= line1.getX0() && pos[0] <= line1.getX1()) {
+            else if (dotP > 0 && !collision && d <= 0.6 && pos[0] >= Screen.lines[closest].getX0() && pos[0] <= Screen.lines[closest].getX1()) {
 
-                calcReflectingVector();
-
+                calcReflectingVector(closest);
             }
 
-            else if (rollen && (pos[0] <= line1.getX0() || pos[0] >= line1.getX1())) {
+            //Während die Kugel am Rollen ist & andere Geraden nah genug kommen (außer die Gerade, auf der die Kugel rollt) wird ein neues Handling eingebracht
+            // Rollen wird temporär auf false gesetzt, damit der Collisioncheck wieder durchgeführt werden kann
+            else if(rollen && d < 0.6 && i!=rollOn && dotP <0){
+                rollen = false;
+                vectorZerlegung(i);
+                if (vectorLength(tempvParallelX, tempvParallelY) <= 2) {
+                    rollen = true;
+                    rollOn = closest;
+                    vx = vProjektionX;
+                    vy = vProjektionY;
+                    System.out.println("Bin am rollen");
+                }
+                else {
+                    calcReflectingVector(i);
+                }
+            }
+
+            //Schaut, ob die Kugel noch auf der Geraden rollt
+            else if (rollen && (pos[0] <= Screen.lines[rollOn].getX0() || pos[0] >= Screen.lines[rollOn].getX1())) {
                 rollen = false;
                 System.out.println("fliege wieder");
             }
         }
 
 
-        public static void calcDistancePointLine ( int i){
+        public static void calcDistancePointLine (int i){
 
             //Vektor zwischen Ball zur Geraden
-            richtungX = line1.getX0() - pos[0];
-            richtungY = line1.getY0() - pos[1];
+            richtungX = Screen.lines[i].getX0() - pos[0];
+            richtungY = Screen.lines[i].getY0() - pos[1];
 
             //Normalen vektor der Geraden
-            normX = (line1.getY1() - line1.getY0());
-            normY = -1 * (line1.getX1() - line1.getX0());
+            normX = (Screen.lines[i].getY1() - Screen.lines[i].getY0());
+            normY = -1 * (Screen.lines[i].getX1() - Screen.lines[i].getX0());
 
-            normalizeRichtung = vectorLength(richtungX, richtungY);
             normalizeNorm = vectorLength(normX, normY);
 
             dotP = richtungX * normX + richtungY * normY;
 
-            d = Math.abs(((richtungX * normX + richtungY * normY) / Math.sqrt(Math.pow(normX, 2) + Math.pow(normY, 2))) - Screen.radius / Screen.scale);
+            d = Math.abs(((richtungX * normX + richtungY * normY) / Math.sqrt(Math.pow(normX, 2) + Math.pow(normY, 2))) - (Screen.radius / Screen.scale));
 
-
+            //Schaut ob eine Linie nah genug dran ist, dessen nummer wird gespeichert und wird im collisionChecker geprüft
+            if(d < 1){
+                    closest = i;
+                }
+            /*
             if (dotP > 0)
                 System.out.println("Der Punkt liegt unter der Linie");
             else if (dotP < 0)
                 System.out.println("Der Punkt liegt über der Linie");
             else
                 System.out.println("Der Punkt liegt genau auf der Linie");
-
+            */
         }
 
-        /*
-        //Berechnet Winkel zw Normalenvektor der Geraden & Richtungsvektor der Kugel
-        public static void calcAngle () {
+        public static void vectorZerlegung (int j) {
 
-            ballVekX = -1 * (vx - vel[0]);
-            ballVekY = -1 * (vy - vel[1]);
-
-            angle = Math.acos((ballVekX * normX + ballVekY * normY) / (vectorLength(ballVekX, ballVekY) * vectorLength(normX, normY)));
-
-        }
-        */
-
-
-        public static void vectorZerlegung () {
-          
-
-            skalar = (vx * (line1.getX1() - line1.getX0()) + vy * (line1.getY1() - line1.getY0())) /
-                    (Math.pow((line1.getX1() - line1.getX0()), 2) + Math.pow((line1.getY1() - line1.getY0()), 2));
+            skalar = (vx * (Screen.lines[j].getX1() - Screen.lines[j].getX0()) + vy * (Screen.lines[j].getY1() - Screen.lines[j].getY0())) /
+                    (Math.pow((Screen.lines[j].getX1() - Screen.lines[j].getX0()), 2) + Math.pow((Screen.lines[j].getY1() - Screen.lines[j].getY0()), 2));
 
             //Projektion des Richtungsvektors der Kugel auf die Gerade
-            vProjektionX = skalar * (line1.getX1() - line1.getX0());
-            vProjektionY = skalar * (line1.getY1() - line1.getY0());
+            vProjektionX = skalar * (Screen.lines[j].getX1() - Screen.lines[j].getX0());
+            vProjektionY = skalar * (Screen.lines[j].getY1() - Screen.lines[j].getY0());
 
             normalizeProjektion = vectorLength(vProjektionX, vProjektionY);
 
             //Paralleler Anteil der Zerlegung -> Wird für Entscheidung ob rollen oder springen gebraucht
             tempvParallelX = vx - vProjektionX;
             tempvParallelY = vy - vProjektionY;
-            System.out.println();
 
         }
 
@@ -288,12 +313,12 @@ public class Kugelbahn {
                 rollen = true;
         }
 
-        public static void calcReflectingVector(){
+        public static void calcReflectingVector(int l){
             //Faktor für die Projektion des Richtungsvektor der Kugel auf die Gerade
-            k = (vx * (line1.getX1() - line1.getX0()) + vy * (line1.getY1() - line1.getY0())) / (Math.pow(line1.getX1() - line1.getX0(), 2) + Math.pow(line1.getY1() - line1.getY0(), 2));
+            k = (vx * (Screen.lines[l].getX1() - Screen.lines[l].getX0()) + vy * (Screen.lines[l].getY1() - Screen.lines[l].getY0())) / (Math.pow(Screen.lines[l].getX1() - Screen.lines[l].getX0(), 2) + Math.pow(Screen.lines[l].getY1() - Screen.lines[l].getY0(), 2));
 
-            vx = heightLoss * (-vx + (2*k*(line1.getX1() - line1.getX0())));
-            vy = heightLoss * (-vy + (2*k*(line1.getY1() - line1.getY0())));
-
+            vx = heightLoss * (-vx + (2*k*(Screen.lines[l].getX1() - Screen.lines[l].getX0())));
+            vy = heightLoss * (-vy + (2*k*(Screen.lines[l].getY1() - Screen.lines[l].getY0())));
+            System.out.println();
         }
     }
