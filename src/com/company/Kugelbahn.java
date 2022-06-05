@@ -19,7 +19,6 @@ public class Kugelbahn {
     static double normX, normY; //Richtungsvektor der Geraden
     static double normalizeNorm; //laenge des Normalenvektors zur Normierung
     static double richtungX, richtungY; //Vektor von Kugel zur Geraden
-    static double normalizeRichtung;    //laenge des ^ Vektors
 
     static double vProjektionX; //Projektion vom Richtungsvektor der Kugel auf Gerade
     static double vProjektionY;
@@ -108,7 +107,6 @@ public class Kugelbahn {
                 ax = ahx - arx;
 
                 ay = ahy - ary;
-                System.out.println();
             }
 
             else if (m < 0 && vx > 0) {
@@ -132,7 +130,6 @@ public class Kugelbahn {
                 ax = ahx - arx;
 
                 ay = ahy - ary;
-                System.out.println();
             }
 
             //Kugel fällt senkrecht auf Gerade
@@ -208,6 +205,7 @@ public class Kugelbahn {
                             vx = vProjektionX;
                             vy = vProjektionY;
                             System.out.println("Bin am rollen");
+                            fixClipping(rollOn);
                         } else {
                             //https://math.stackexchange.com/questions/3301455/reflect-a-2d-vector-over-another-vector-without-using-normal-why-this-gives-the
                             calcReflectingVector(closest);
@@ -231,7 +229,8 @@ public class Kugelbahn {
                     rollOn = closest;
                     vx = vProjektionX;
                     vy = vProjektionY;
-                    System.out.println("Bin am rollen");
+                    System.out.println("Bin am rollen" + rollOn);
+                    fixClipping(rollOn);
                 }
                 else {
                     calcReflectingVector(i);
@@ -266,14 +265,14 @@ public class Kugelbahn {
             if(d < 1){
                     closest = i;
                 }
-            /*
+
             if (dotP > 0)
                 System.out.println("Der Punkt liegt unter der Linie");
             else if (dotP < 0)
                 System.out.println("Der Punkt liegt über der Linie");
             else
                 System.out.println("Der Punkt liegt genau auf der Linie");
-            */
+
         }
 
         public static void vectorZerlegung (int j) {
@@ -319,6 +318,24 @@ public class Kugelbahn {
 
             vx = heightLoss * (-vx + (2*k*(Screen.lines[l].getX1() - Screen.lines[l].getX0())));
             vy = heightLoss * (-vy + (2*k*(Screen.lines[l].getY1() - Screen.lines[l].getY0())));
-            System.out.println();
+        }
+
+        static double fix;
+        public static void fixClipping(int rollOn){
+            double m = ((double) Screen.lines[rollOn].getY1() - (double) Screen.lines[rollOn].getY0()) / ((double) Screen.lines[rollOn].getX1() - (double) Screen.lines[rollOn].getX0());
+            //Schauen ob Kugel ober oder unter Linie liegt
+            calcDistancePointLine(rollOn);
+            fix = Math.abs(d - 0.5);
+            //Liegt über der Linie
+            if(dotP < 0)
+            {
+                sy = sy - (Math.sin(Math.atan(m)) * fix);
+                sx = sx + (Math.sin(Math.atan(m)) * fix);
+            }
+            if(dotP > 0)
+            {
+                sy = sy + (Math.sin(Math.atan(m)) * fix);
+                sx = sx + (Math.sin(Math.atan(m)) * fix);
+            }
         }
     }
