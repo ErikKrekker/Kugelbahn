@@ -225,6 +225,8 @@ public class Main {
         Kugelbahn.wind[1] = windY;
 
         field.repaint();
+
+        Kugelbahn.rollen = false;
     }
 
 
