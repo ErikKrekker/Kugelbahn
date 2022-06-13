@@ -26,9 +26,22 @@ public class Screen extends JPanel implements Runnable {
     //x0 muss immer kleiner als x1 sein
 
     static Line lines[] = {
-            new Line(5,35,10,70),
-            new Line(0,70,50,20),
-            new Line(0, Screen.width/ Screen.scale,70,70)
+            new Line(5,8,35,20),
+            new Line(35,25,65,35),
+            new Line(45, 60,70,20),
+            new Line(5, 45,10,15),
+            new Line(10, 45,30,30),
+            new Line(0, 50,40,60),
+            new Line(40, 65,75,45),
+            new Line(0, 70,70,70),
+
+
+    };
+
+    static Kugel ball[] = {
+            new Kugel(60, 64.5, 0, 0, 3),
+            new Kugel(58, 64.5, 0, 0, 1.7),
+            new Kugel(58, 69.5, 0, 0, 1.7),
     };
 
     public Screen() {
@@ -54,7 +67,7 @@ public class Screen extends JPanel implements Runnable {
         double drawInterval = 1000000000/FPS;
         double nextDrawTime = System.nanoTime() + drawInterval;
 
-        while(outOfBounds == false){
+        while(!outOfBounds){
 
             update();
             //Startet paintComponent methode
@@ -101,11 +114,22 @@ public class Screen extends JPanel implements Runnable {
         g2.setColor(Color.white);
         g2.drawLine(lines[0].getX0() * scale, lines[0].getY0() * scale, lines[0].getX1() * scale, lines[0].getY1() * scale);
 
-        g2.setColor(Color.blue);
         g2.drawLine(lines[1].getX0() * scale, lines[1].getY0() * scale, lines[1].getX1() * scale, lines[1].getY1() * scale);
 
-        g2.setColor(Color.cyan);
         g2.drawLine(lines[2].getX0() * scale, lines[2].getY0() * scale, lines[2].getX1() * scale, lines[2].getY1() * scale);
+
+        g2.drawLine(lines[3].getX0() * scale, lines[3].getY0() * scale, lines[3].getX1() * scale, lines[3].getY1() * scale);
+
+        g2.drawLine(lines[4].getX0() * scale, lines[4].getY0() * scale, lines[4].getX1() * scale, lines[4].getY1() * scale);
+
+        g2.drawLine(lines[5].getX0() * scale, lines[5].getY0() * scale, lines[5].getX1() * scale, lines[5].getY1() * scale);
+
+        g2.drawLine(lines[6].getX0() * scale, lines[6].getY0() * scale, lines[6].getX1() * scale, lines[6].getY1() * scale);
+
+        g2.drawLine(lines[7].getX0() * scale, lines[7].getY0() * scale, lines[7].getX1() * scale, lines[7].getY1() * scale);
+
+
+
 
 
         //Line2D line = new Line2D.Double(10 * scale,30 * scale,10 * scale,30 * scale);
@@ -113,20 +137,28 @@ public class Screen extends JPanel implements Runnable {
         //AffineTransform at = AffineTransform.getRotateInstance(Math.toRadians(degree), line.getX1(), line.getY1());
         //g2.draw(at.createTransformedShape(line));
 
-        //Geschwindigkeitsvektor der Kugel
-        g2.drawLine((int)(Kugelbahn.pos[0] * scale), (int)(Kugelbahn.pos[1] * scale), (int)((Kugelbahn.pos[0] + Kugelbahn.vel[0]) * scale), (int)((Kugelbahn.pos[1] + Kugelbahn.vel[1]) * scale));
-
         //Zeichnen der Kugel
         //g2.fillOval((int)(Kugelbahn.pos[0]*scale - (diameter/2)) ,(int)((Kugelbahn.pos[1]*scale + (diameter/2))*-1), diameter, diameter);
         g2.setColor(Color.green);
-        g2.fillOval((int)(Kugelbahn.pos[0]*scale - radius) ,(int)((Kugelbahn.pos[1]*scale - radius)), diameter, diameter);
+        //g2.fillOval((int)(Kugelbahn.pos[0]*scale - radius) ,(int)((Kugelbahn.pos[1]*scale - radius)), diameter, diameter);
+        g2.fillOval((int)((ball[0].getPosX()*scale - radius)) ,(int)((ball[0].getPosY()*scale - radius)), diameter, diameter);
+        g2.drawLine((int)(ball[0].getPosX() * scale), (int)(ball[0].getPosY() * scale), (int)((ball[0].getPosX() + ball[0].getVelX()) * scale), (int)((ball[0].getPosY() + ball[0].getVelY()) * scale));
+
+        g2.setColor(Color.MAGENTA);
+        g2.fillOval((int)((ball[1].getPosX()*scale - radius)) ,(int)((ball[1].getPosY()*scale - radius)), diameter, diameter);
+        g2.drawLine((int)(ball[1].getPosX() * scale), (int)(ball[1].getPosY() * scale), (int)((ball[1].getPosX() + ball[1].getVelX()) * scale), (int)((ball[1].getPosY() + ball[1].getVelY()) * scale));
+
+        g2.setColor(Color.blue);
+        g2.fillOval((int)((ball[2].getPosX()*scale - radius)) ,(int)((ball[2].getPosY()*scale - radius)), diameter, diameter);
+        g2.drawLine((int)(ball[2].getPosX() * scale), (int)(ball[2].getPosY() * scale), (int)((ball[2].getPosX() + ball[2].getVelX()) * scale), (int)((ball[2].getPosY() + ball[2].getVelY()) * scale));
+
         g2.dispose();
     }
 
     //schaut, ob die Kugel an den Seiten bzw. unten aus dem Bild fliegt
     public void checkBounds(){
 
-        if((int)(Kugelbahn.pos[0]*scale - radius) >= width || (int)(Kugelbahn.pos[0]*scale + radius) < 0 || (int)(Kugelbahn.pos[1]*scale - radius) >= height){
+        if((int)(ball[0].getPosX()*scale - radius) >= width || (int)(ball[0].getPosX()*scale + radius) < 0 || (int)(ball[0].getPosY()*scale - radius) >= height){
             outOfBounds = true;
             System.out.println("--------ENDE---------");
         }

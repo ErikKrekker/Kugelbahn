@@ -11,7 +11,7 @@ import java.awt.event.MouseListener;
 public class Main {
     static int x;
     static int y;
-    public static JLabel currentCoordinate = new JLabel("Current Coordinate: [" + Kugelbahn.pos[0] + ", " + Kugelbahn.pos[1] + "]");
+    public static JLabel currentCoordinate = new JLabel("Current Coordinate: [" +Screen.ball[0].getPosX()+ ", " + Screen.ball[0].getPosY() + "]");
     //y-richtung anpassen -> wie in echt
     public static void main(String[] args) {
 
@@ -22,11 +22,11 @@ public class Main {
         window.setTitle("Kugelbahn");
 
         //Start settings
-        Kugelbahn.pos[0] = 10;
-        Kugelbahn.pos[1] = 10;
+        //Kugelbahn.pos[0] = 10;
+        //Kugelbahn.pos[1] = 10;
 
-        Kugelbahn.vel[0] = 0;
-        Kugelbahn.vel[1] = 0;
+        //Kugelbahn.vel[0] = 0;
+        //Kugelbahn.vel[1] = 0;
 
         Kugelbahn.wind[0] = 0;
         Kugelbahn.wind[1] = 0;
@@ -206,20 +206,21 @@ public class Main {
         double windX = Double.parseDouble(windx_val.getText());
         double windY = Double.parseDouble(windy_val.getText());
 
-        Kugelbahn.rollen = false;
+        Screen.ball[0].setPosX(positionX);
+        Screen.ball[0].setPosY(positionY);
 
-        Kugelbahn.pos[0] = positionX;
-        Kugelbahn.pos[1] = positionY;
-
-        Kugelbahn.vel[0] = velX;
-        Kugelbahn.vel[1] = velY;
+        Screen.ball[0].setVelX(velX);
+        Screen.ball[0].setVelY(velY);
 
         Kugelbahn.wind[0] = windX;
         Kugelbahn.wind[1] = windY;
 
         field.repaint();
 
-        Kugelbahn.rollen = false;
+        Screen.ball[0].setRollen(false);
+        Screen.ball[1].setRollen(false);
+
+        Kugelbahn.ballBounce = true;
     }
 
 
@@ -228,22 +229,23 @@ public class Main {
         double positionX = posx_val;
         double positionY = posy_val;
 
-        Kugelbahn.pos[0] = positionX;
-        Kugelbahn.pos[1] = positionY;
+        Screen.ball[0].setPosX(positionX);
+        Screen.ball[0].setPosY(positionY);
 
-        posx_field.setText(Double.toString(Kugelbahn.pos[0]));
-        posy_field.setText(Double.toString(Kugelbahn.pos[1]));
+        posx_field.setText(Double.toString(Screen.ball[0].getPosX()));
+        posy_field.setText(Double.toString(Screen.ball[0].getPosY()));
 
         currentCoordinate.setText("Current Coordinate: [" + positionX + ", " + positionY + "]");
 
         field.repaint();
 
-
     }
 
     public static void updateCoordinate(){
         //aktuelle Koordinaten als int
-       currentCoordinate.setText("Current Coordinate: [" + Math.round(Kugelbahn.pos[0]) + ", " + Math.round(Kugelbahn.pos[1]) + "]");
+        int pos_x = (int)Screen.ball[0].getPosX();
+        int pos_y = (int)Screen.ball[0].getPosY();
+       currentCoordinate.setText("Current Coordinate: [" + pos_x + ", " + pos_y + "]");
     }
 
 }
