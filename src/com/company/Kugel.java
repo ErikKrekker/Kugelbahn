@@ -16,6 +16,7 @@ public class Kugel {
 
     boolean rollen = false;
     boolean collision = true;
+    boolean movable;
 
     int rollOn;
 
@@ -24,12 +25,16 @@ public class Kugel {
 
     double weight;
 
-    public Kugel(double posX, double posY, double velX, double velY, double weight){
+    boolean magnet;
+
+    public Kugel(double posX, double posY, double velX, double velY, double weight, boolean movable, boolean magnet){
         this.velX = velX;
         this.velY = velY;
         this.posX = posX;
         this.posY = posY;
         this.weight = weight;
+        this.movable = movable;
+        this.magnet = magnet;
     }
 
     public double getVelX(){
@@ -78,6 +83,9 @@ public class Kugel {
 
     public double getWeight() { return weight; }
 
+    public boolean isMovable() { return movable; }
+
+    public boolean isMagnet() { return  magnet; }
 
 
 
@@ -129,5 +137,6 @@ public class Kugel {
 
     public void setvProjektionY(double vProjektionY){ this.vProjektionY = vProjektionY; }
 
+    public void setMovable(boolean movable){ this.movable = movable; }
 }
 
