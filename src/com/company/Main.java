@@ -105,6 +105,10 @@ public class Main {
 
         Screen field = new Screen();
 
+        JLabel linedisclaimer = new JLabel("P1 = Linke Maus | P2 = Rechte Maus");
+        linedisclaimer.setBounds(770, 420, 220, 25);
+        screen.add(linedisclaimer);
+
         String[] lineselect = {"Linie 1","Linie 2", "Linie 3", "Linie 4", "Linie 5","Linie 6"};
 
         linechoice = new JComboBox(lineselect);
