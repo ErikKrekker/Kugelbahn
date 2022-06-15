@@ -17,9 +17,7 @@ public class Line {
 
     public int getX0(){ return x0; }
 
-    public int getX1(){
-        return x1;
-    }
+    public int getX1(){ return x1; }
 
     public int getY0(){
         return y0;
@@ -38,4 +36,13 @@ public class Line {
     public void setY0(int y0) { this.y0 = y0; }
 
     public void setY1(int y1) { this.y1 = y1; }
+
+    public void setP1(int x0, int y0){
+        this.x0 = x0 ;
+        this.y0 = y0;
+    }
+    public void setP2(int x1, int y1){
+        this.x1 = x1 ;
+        this.y1 = y1;
+    }
 }

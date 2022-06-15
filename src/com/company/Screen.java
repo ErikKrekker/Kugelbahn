@@ -6,6 +6,8 @@ import java.awt.*;
 
 public class Screen extends JPanel implements Runnable {
 
+    public static Graphics2D g2;
+
     static double FPS = 60;
 
     public static int width = 750;          //Bildschirmgroese in px
@@ -24,20 +26,19 @@ public class Screen extends JPanel implements Runnable {
     //x0 muss immer kleiner als x1 sein
 
     static Line lines[] = {
-            new Line(5,15,35,18),
+            new Line(5,8,35,22),
             new Line(35,25,65,35),
-            new Line(7, 40,30,30),
-            new Line(0, 45,2,4),
-            new Line(0, 45,65,54),
-            new Line(45, 60,74,60),
-            new Line(10, 71,15,55),
-            new Line(10, 70,50,65),
-            new Line(74,0,74,75)
+            new Line(0, 15,5,45),
+            new Line(10, 45,30,30),
+            new Line(0, 50,40,60),
+            new Line(40, 65,75,45),
+            new Line(0, 72,70,72),
+            new Line(70, 0,70,72),
     };
 
     static Marble ball[] = {
-            new Marble(30, 65, 0, 0, 1.7, true, false),
-            new Marble(30, 45, 7, 0, 1.7, true, false),
+            new Marble(62, 24.3, 0, 0, 1.7, true, false),
+            new Marble(22, 11.5, 0, 0, 1.7, true, false),
             new Marble(54, 30.8, 0, 0, 2, false, true),
             new Marble(58, 32.1, 0, 0, 2, false, true),
     };
@@ -107,31 +108,16 @@ public class Screen extends JPanel implements Runnable {
 
         super.paintComponent(g);
 
-        Graphics2D g2 = (Graphics2D)g;
+        g2 = (Graphics2D)g;
         //Zeichnen der Linien
-        g2.setColor(Color.white);
-        g2.drawLine(lines[0].getX0() * scale, lines[0].getY0() * scale, lines[0].getX1() * scale, lines[0].getY1() * scale);
-
-        g2.drawLine(lines[1].getX0() * scale, lines[1].getY0() * scale, lines[1].getX1() * scale, lines[1].getY1() * scale);
-
-        g2.drawLine(lines[2].getX0() * scale, lines[2].getY0() * scale, lines[2].getX1() * scale, lines[2].getY1() * scale);
-
-        g2.drawLine(lines[3].getX0() * scale, lines[3].getY0() * scale, lines[3].getX1() * scale, lines[3].getY1() * scale);
-
-        g2.drawLine(lines[4].getX0() * scale, lines[4].getY0() * scale, lines[4].getX1() * scale, lines[4].getY1() * scale);
-
-        g2.drawLine(lines[5].getX0() * scale, lines[5].getY0() * scale, lines[5].getX1() * scale, lines[5].getY1() * scale);
-
-        g2.drawLine(lines[6].getX0() * scale, lines[6].getY0() * scale, lines[6].getX1() * scale, lines[6].getY1() * scale);
-
-        g2.drawLine(lines[7].getX0() * scale, lines[7].getY0() * scale, lines[7].getX1() * scale, lines[7].getY1() * scale);
-
-        g2.drawLine(lines[8].getX0() * scale, lines[8].getY0() * scale, lines[8].getX1() * scale, lines[8].getY1() * scale);
-
-
-
-
-
+        for (int i = 0; i < lines.length; i++){
+            if(i == Main.linechoice.getSelectedIndex() && Main.linemovement.isSelected()){
+                g2.setColor((Color.red));
+            }else{
+                g2.setColor(Color.white);
+            }
+            g2.drawLine(lines[i].getX0() * scale, lines[i].getY0() * scale, lines[i].getX1() * scale, lines[i].getY1() * scale);
+        }
 
         //Line2D line = new Line2D.Double(10 * scale,30 * scale,10 * scale,30 * scale);
         //g2.draw(line);

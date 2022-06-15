@@ -1,15 +1,20 @@
 package com.company;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 
 public class Main {
+    static JComboBox ballchoice;
+    static JComboBox linechoice;
+    static JCheckBox linemovement;
     static int x;
     static int y;
-    public static JLabel currentCoordinate = new JLabel("Current Coordinate: [" +(int)Screen.ball[0].getPosX()+ ", " + (int)Screen.ball[0].getPosY() + "]");
-
+    public static JLabel currentCoordinate = new JLabel("Current Coordinate: [" +Screen.ball[0].getPosX()+ ", " + Screen.ball[0].getPosY() + "]");
+    //y-richtung anpassen -> wie in echt
     public static void main(String[] args) {
 
 
@@ -18,11 +23,14 @@ public class Main {
         window.setResizable(false);
         window.setTitle("Controller");
 
+        //Start settings
+
         Controller.wind[0] = 0;
         Controller.wind[1] = 0;
 
         Controller.gravity[0] = 0;
-        Controller.gravity[1] = 9.81;
+        //Controller.gravity[1] = -9.81;
+        Controller.gravity[1] = 10;
 
 
         JPanel screen = new JPanel();
@@ -86,23 +94,38 @@ public class Main {
         windy_val.setText(String.valueOf(Controller.wind[1]));
         screen.add(windy_val);
 
-        JLabel rotation_val = new JLabel("Rotation : ");
-        rotation_val.setBounds(780, 460, 120, 25);
-        screen.add(rotation_val);
+        String[] ballselect = {"Green Ball","Pink Ball", "White Ball", "Black Ball"};
 
-
+        ballchoice = new JComboBox(ballselect);
+        ballchoice.setBounds(810, 360, 120, 25);
+        screen.add(ballchoice);
 
         currentCoordinate.setBounds(780, 540, 190, 25);
         screen.add(currentCoordinate);
 
         Screen field = new Screen();
 
+        String[] lineselect = {"Linie 1","Linie 2", "Linie 3", "Linie 4", "Linie 5","Linie 6"};
 
-        JSlider lineTilt = new JSlider(JSlider.HORIZONTAL,0,360,0);
-        lineTilt.setBounds(780, 500, 180, 25);
-        lineTilt.addChangeListener(e -> tilt(field,rotation_val, lineTilt));
-        screen.add(lineTilt);
+        linechoice = new JComboBox(lineselect);
+        linechoice.setBounds(810, 460, 120, 25);
+        linechoice.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                field.repaint();
+            }
+        });
+        screen.add(linechoice);
 
+        linemovement = new JCheckBox("<-- Linien Verschieben");
+        linemovement.setBounds(780, 500, 180, 25);
+        linemovement.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                field.repaint();
+            }
+        });
+        screen.add(linemovement);
 
         field.setBounds(0, 0, Screen.width, Screen.height);
         field.setBackground(Color.pink);
@@ -112,9 +135,17 @@ public class Main {
             @Override
             public void mouseClicked(MouseEvent e) {
                 x = e.getX() / Screen.scale;
-                y = (e.getY()/ Screen.scale);
+                y = (e.getY() / Screen.scale);
+                //y = (e.getY() / Screen.scale) * -1;
+                if (linemovement.isSelected()){
+                    placeline(x,y,field,e);
+                }else{
 
-                placeball(x,y,currentCoordinate,field,posx_val,posy_val);
+                    placeball(x,y,currentCoordinate,field,posx_val,posy_val);
+
+                }
+
+
             }
         });
 
@@ -144,21 +175,6 @@ public class Main {
         window.setVisible(true);
 
     }
-
-    public static void tilt(Screen field, JLabel rotation_val, JSlider tilt_val){
-
-        int rotation_pos = tilt_val.getValue();
-
-        rotation_val.setText("Rotation : " + Double.toString(tilt_val.getValue()));
-        Screen.degree = tilt_val.getValue();
-        field.repaint();
-
-    }
-
-    public static void dragline(){
-
-    }
-
 
     public static void programmstart(Screen field, JButton start,JButton update) {
 
@@ -190,14 +206,14 @@ public class Main {
         double windX = Double.parseDouble(windx_val.getText());
         double windY = Double.parseDouble(windy_val.getText());
 
-        Screen.ball[0].setPosX(positionX);
-        Screen.ball[0].setPosY(newY(positionY));
+        Screen.ball[ballchoice.getSelectedIndex()].setPosX(positionX);
+        Screen.ball[ballchoice.getSelectedIndex()].setPosY(positionY);
 
-        Screen.ball[0].setVelX(velX);
-        Screen.ball[0].setVelY(-1 * velY);
+        Screen.ball[ballchoice.getSelectedIndex()].setVelX(velX);
+        Screen.ball[ballchoice.getSelectedIndex()].setVelY(velY);
 
         Controller.wind[0] = windX;
-        Controller.wind[1] = -1 * windY;
+        Controller.wind[1] = windY;
 
         field.repaint();
         for(int i = 0; i < Screen.ball.length; i++) {
@@ -210,31 +226,36 @@ public class Main {
 
     public static void placeball(int posx_val, int posy_val, JLabel currentCoordinate, Screen field, JTextField posx_field, JTextField posy_field){
 
-        Screen.ball[0].setPosX(posx_val);
-        Screen.ball[0].setPosY(posy_val);
+        Screen.ball[ballchoice.getSelectedIndex()].setPosX(posx_val);
+        Screen.ball[ballchoice.getSelectedIndex()].setPosY(posy_val);
 
-        posx_field.setText(Double.toString(Screen.ball[0].getPosX()));
-        posy_field.setText(Double.toString(newY(Screen.ball[0].getPosY())));
+        posx_field.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getPosX()));
+        posy_field.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getPosY()));
 
-        currentCoordinate.setText("Current Coordinate: [" + posx_val + ", " + newY(posy_val) + "]");
+        currentCoordinate.setText("Current Coordinate: [" + (double) posx_val + ", " + (double) posy_val + "]");
 
         field.repaint();
 
     }
 
+    public static void placeline(int posx_val, int posy_val, Screen field, MouseEvent e) {
+
+        if(e.getButton() == MouseEvent.BUTTON1){
+            Screen.lines[linechoice.getSelectedIndex()].setP1(posx_val, posy_val);
+        }else if(e.getButton() == MouseEvent.BUTTON3){
+            Screen.lines[linechoice.getSelectedIndex()].setP2(posx_val, posy_val);
+        }
+
+
+        field.repaint();
+    }
+
+
     public static void updateCoordinate(){
         //aktuelle Koordinaten als int
-        int pos_x = (int)Screen.ball[0].getPosX();
-        int pos_y = newY((int)Screen.ball[0].getPosY());
+        int pos_x = (int)Screen.ball[ballchoice.getSelectedIndex()].getPosX();
+        int pos_y = (int)Screen.ball[ballchoice.getSelectedIndex()].getPosY();
         currentCoordinate.setText("Current Coordinate: [" + pos_x + ", " + pos_y + "]");
-    }
-
-    public static double newY(double y){
-        return 75 - y;
-    }
-
-    public static int newY(int y){
-        return 75 - y;
     }
 
 }
