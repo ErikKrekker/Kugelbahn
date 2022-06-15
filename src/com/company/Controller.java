@@ -237,6 +237,8 @@ public class Controller {
             vectorZerlegungPointLine(closest, ballID);
 
             bounceOrRoll(ballID);
+            fixClipping(Screen.ball[ballID].getRollOn(), ballID);
+
         }
 
         //Schaut, ob die Marble noch am Rollen ist (entweder nicht auf der Linie oder ist zu weit weg)
@@ -355,6 +357,8 @@ public class Controller {
         double m = ((double) Screen.lines[rollOn].getY1() - (double) Screen.lines[rollOn].getY0()) / ((double) Screen.lines[rollOn].getX1() - (double) Screen.lines[rollOn].getX0());
         calcDistancePointLine(rollOn, ballID);
         //Unterschiedliche Szenarios, wie die Marble neu positiniert werden muss
+        //Wenn die Kugel oberhalb der Linie liegt
+        System.out.println();
         if (dotP < 0 && m > 0 && d < 0.5) {
             calcDistancePointLine(rollOn, ballID);
             fix = Math.abs(d - 0.5);
@@ -392,6 +396,43 @@ public class Controller {
             fix = Math.abs(d - 0.5);
 
             Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
+            updateVelocityPosition(ballID);
+        }
+
+        //Wenn die Kugel unterhalb der Linie liegt
+        else if (dotP > 0 && m > 0 && d < 0.5) {
+            calcDistancePointLine(rollOn, ballID);
+            fix = Math.abs(d - 0.5);
+            Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() - (fix * Math.abs((normX / normalizeNorm))));
+            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
+            updateVelocityPosition(ballID);
+        } else if (dotP > 0 && m < 0 && d < 0.5) {
+            calcDistancePointLine(rollOn, ballID);
+            fix = Math.abs(d - 0.5);
+            Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() + (fix * Math.abs((normX / normalizeNorm))));
+            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
+            updateVelocityPosition(ballID);
+        } else if (dotP > 0 && m > 0 && d > 0.5) {
+            calcDistancePointLine(rollOn, ballID);
+            fix = Math.abs(d - 0.5);
+            Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() + (fix * Math.abs((normX / normalizeNorm))));
+            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
+            updateVelocityPosition(ballID);
+        } else if (dotP > 0 && m < 0 && d > 0.5) {
+            calcDistancePointLine(rollOn, ballID);
+            fix = Math.abs(d - 0.5);
+            Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() - (fix * Math.abs((normX / normalizeNorm))));
+            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
+            updateVelocityPosition(ballID);
+        } else if (dotP > 0 && d > 0.5 && m == 0) {
+            calcDistancePointLine(rollOn, ballID);
+            fix = Math.abs(d - 0.5);
+            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
+            updateVelocityPosition(ballID);
+        } else if (dotP > 0 && m == 0 && d < 0.5) {
+            calcDistancePointLine(rollOn, ballID);
+            fix = Math.abs(d - 0.5);
+            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
             updateVelocityPosition(ballID);
         }
     }

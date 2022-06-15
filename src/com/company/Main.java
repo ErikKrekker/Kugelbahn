@@ -8,8 +8,8 @@ import java.awt.event.MouseEvent;
 public class Main {
     static int x;
     static int y;
-    public static JLabel currentCoordinate = new JLabel("Current Coordinate: [" +Screen.ball[0].getPosX()+ ", " + Screen.ball[0].getPosY() + "]");
-    //y-richtung anpassen -> wie in echt
+    public static JLabel currentCoordinate = new JLabel("Current Coordinate: [" +(int)Screen.ball[0].getPosX()+ ", " + (int)Screen.ball[0].getPosY() + "]");
+
     public static void main(String[] args) {
 
 
@@ -18,14 +18,11 @@ public class Main {
         window.setResizable(false);
         window.setTitle("Controller");
 
-        //Start settings
-
         Controller.wind[0] = 0;
         Controller.wind[1] = 0;
 
         Controller.gravity[0] = 0;
-        //Controller.gravity[1] = -9.81;
-        Controller.gravity[1] = 10;
+        Controller.gravity[1] = 9.81;
 
 
         JPanel screen = new JPanel();
@@ -115,8 +112,7 @@ public class Main {
             @Override
             public void mouseClicked(MouseEvent e) {
                 x = e.getX() / Screen.scale;
-                y = (e.getY() / Screen.scale);
-                //y = (e.getY() / Screen.scale) * -1;
+                y = (e.getY()/ Screen.scale);
 
                 placeball(x,y,currentCoordinate,field,posx_val,posy_val);
             }
@@ -195,13 +191,13 @@ public class Main {
         double windY = Double.parseDouble(windy_val.getText());
 
         Screen.ball[0].setPosX(positionX);
-        Screen.ball[0].setPosY(positionY);
+        Screen.ball[0].setPosY(newY(positionY));
 
         Screen.ball[0].setVelX(velX);
-        Screen.ball[0].setVelY(velY);
+        Screen.ball[0].setVelY(-1 * velY);
 
         Controller.wind[0] = windX;
-        Controller.wind[1] = windY;
+        Controller.wind[1] = -1 * windY;
 
         field.repaint();
         for(int i = 0; i < Screen.ball.length; i++) {
@@ -218,9 +214,9 @@ public class Main {
         Screen.ball[0].setPosY(posy_val);
 
         posx_field.setText(Double.toString(Screen.ball[0].getPosX()));
-        posy_field.setText(Double.toString(Screen.ball[0].getPosY()));
+        posy_field.setText(Double.toString(newY(Screen.ball[0].getPosY())));
 
-        currentCoordinate.setText("Current Coordinate: [" + (double) posx_val + ", " + (double) posy_val + "]");
+        currentCoordinate.setText("Current Coordinate: [" + posx_val + ", " + newY(posy_val) + "]");
 
         field.repaint();
 
@@ -229,8 +225,16 @@ public class Main {
     public static void updateCoordinate(){
         //aktuelle Koordinaten als int
         int pos_x = (int)Screen.ball[0].getPosX();
-        int pos_y = (int)Screen.ball[0].getPosY();
+        int pos_y = newY((int)Screen.ball[0].getPosY());
         currentCoordinate.setText("Current Coordinate: [" + pos_x + ", " + pos_y + "]");
+    }
+
+    public static double newY(double y){
+        return 75 - y;
+    }
+
+    public static int newY(int y){
+        return 75 - y;
     }
 
 }
