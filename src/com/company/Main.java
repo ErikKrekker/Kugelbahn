@@ -1,12 +1,9 @@
 package com.company;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
-//Github Test weil es Error gesagt hat obwohl da kein Error mehr war
 
 public class Main {
     static int x;
@@ -19,21 +16,16 @@ public class Main {
         JFrame window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
-        window.setTitle("Kugelbahn");
+        window.setTitle("Controller");
 
         //Start settings
-        //Kugelbahn.pos[0] = 10;
-        //Kugelbahn.pos[1] = 10;
 
-        //Kugelbahn.vel[0] = 0;
-        //Kugelbahn.vel[1] = 0;
+        Controller.wind[0] = 0;
+        Controller.wind[1] = 0;
 
-        Kugelbahn.wind[0] = 0;
-        Kugelbahn.wind[1] = 0;
-
-        Kugelbahn.gravity[0] = 0;
-        //Kugelbahn.gravity[1] = -9.81;
-        Kugelbahn.gravity[1] = 10;
+        Controller.gravity[0] = 0;
+        //Controller.gravity[1] = -9.81;
+        Controller.gravity[1] = 10;
 
 
         JPanel screen = new JPanel();
@@ -49,7 +41,7 @@ public class Main {
 
         JTextField posx_val = new JTextField();
         posx_val.setBounds(890, 20, 80, 25);
-        posx_val.setText(String.valueOf( Kugelbahn.pos[0]));
+        posx_val.setText(String.valueOf(Screen.ball[0].getPosX()));
         screen.add(posx_val);
 
         JLabel posy = new JLabel("Position Y: ");
@@ -58,7 +50,7 @@ public class Main {
 
         JTextField posy_val = new JTextField();
         posy_val.setBounds(890, 60, 80, 25);
-        posy_val.setText(String.valueOf( Kugelbahn.pos[1]));
+        posy_val.setText(String.valueOf(Screen.ball[0].getPosY()));
         screen.add(posy_val);
 
         JLabel velx = new JLabel("Geschw X: ");
@@ -67,7 +59,7 @@ public class Main {
 
         JTextField velx_val = new JTextField();
         velx_val.setBounds(890, 100, 80, 25);
-        velx_val.setText(String.valueOf( Kugelbahn.vel[0]));
+        velx_val.setText(String.valueOf(Screen.ball[0].getVelX()));
         screen.add(velx_val);
 
         JLabel vely = new JLabel("Geschw Y: ");
@@ -76,7 +68,7 @@ public class Main {
 
         JTextField vely_val = new JTextField();
         vely_val.setBounds(890, 140, 80, 25);
-        vely_val.setText(String.valueOf( Kugelbahn.vel[1]));
+        vely_val.setText(String.valueOf(Screen.ball[0].getVelY()));
         screen.add(vely_val);
 
         JLabel windx = new JLabel("Wind X: ");
@@ -85,7 +77,7 @@ public class Main {
 
         JTextField windx_val = new JTextField();
         windx_val.setBounds(890, 180, 80, 25);
-        windx_val.setText(String.valueOf(Kugelbahn.wind[0]));
+        windx_val.setText(String.valueOf(Controller.wind[0]));
         screen.add(windx_val);
 
         JLabel windy = new JLabel("Wind Y: ");
@@ -94,12 +86,8 @@ public class Main {
 
         JTextField windy_val = new JTextField();
         windy_val.setBounds(890, 220, 80, 25);
-        windy_val.setText(String.valueOf(Kugelbahn.wind[1]));
+        windy_val.setText(String.valueOf(Controller.wind[1]));
         screen.add(windy_val);
-
-        JLabel geschwindigkeit_val = new JLabel("Geschwindigkeit : ");
-        geschwindigkeit_val.setBounds(780, 420, 180, 25);
-        screen.add(geschwindigkeit_val);
 
         JLabel rotation_val = new JLabel("Rotation : ");
         rotation_val.setBounds(780, 460, 120, 25);
@@ -135,7 +123,7 @@ public class Main {
         });
 
         screen.add(field);
-        JButton positionUpdate = new JButton("Update Kugel");
+        JButton positionUpdate = new JButton("Update Marble");
         positionUpdate.setBounds(780, 300, 190, 25);
         positionUpdate.addActionListener(e -> programmupdate(posx_val,posy_val,velx_val,vely_val,windx_val,windy_val,field));
         screen.add(positionUpdate);
@@ -212,30 +200,27 @@ public class Main {
         Screen.ball[0].setVelX(velX);
         Screen.ball[0].setVelY(velY);
 
-        Kugelbahn.wind[0] = windX;
-        Kugelbahn.wind[1] = windY;
+        Controller.wind[0] = windX;
+        Controller.wind[1] = windY;
 
         field.repaint();
+        for(int i = 0; i < Screen.ball.length; i++) {
+            Screen.ball[i].setRollen(false);
 
-        Screen.ball[0].setRollen(false);
-        Screen.ball[1].setRollen(false);
+        }
 
-        Kugelbahn.ballBounce = true;
     }
 
 
     public static void placeball(int posx_val, int posy_val, JLabel currentCoordinate, Screen field, JTextField posx_field, JTextField posy_field){
 
-        double positionX = posx_val;
-        double positionY = posy_val;
-
-        Screen.ball[0].setPosX(positionX);
-        Screen.ball[0].setPosY(positionY);
+        Screen.ball[0].setPosX(posx_val);
+        Screen.ball[0].setPosY(posy_val);
 
         posx_field.setText(Double.toString(Screen.ball[0].getPosX()));
         posy_field.setText(Double.toString(Screen.ball[0].getPosY()));
 
-        currentCoordinate.setText("Current Coordinate: [" + positionX + ", " + positionY + "]");
+        currentCoordinate.setText("Current Coordinate: [" + (double) posx_val + ", " + (double) posy_val + "]");
 
         field.repaint();
 
@@ -245,7 +230,7 @@ public class Main {
         //aktuelle Koordinaten als int
         int pos_x = (int)Screen.ball[0].getPosX();
         int pos_y = (int)Screen.ball[0].getPosY();
-       currentCoordinate.setText("Current Coordinate: [" + pos_x + ", " + pos_y + "]");
+        currentCoordinate.setText("Current Coordinate: [" + pos_x + ", " + pos_y + "]");
     }
 
 }
