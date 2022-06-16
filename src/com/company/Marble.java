@@ -30,7 +30,7 @@ public class Marble {
         this.velX = velX;
         this.velY = velY;
         this.posX = posX;
-        this.posY = posY;
+        this.posY = Main.newY(posY);
         this.weight = weight;
         this.movable = movable;
         this.magnet = magnet;
@@ -110,9 +110,7 @@ public class Marble {
         this.posX = posX;
     }
 
-    public void setPosY(double posY) {
-        this.posY = posY;
-    }
+    public void setPosY(double posY) { this.posY = posY; }
 
     public void setPosX_new(double posX_new) {
         this.posX_new = posX_new;
