@@ -92,7 +92,7 @@ public class Main {
         windy_val.setText(String.valueOf(Controller.wind[1]));
         screen.add(windy_val);
 
-        String[] ballselect = {"Green Ball","Pink Ball", "White Ball", "Black Ball"};
+        String[] ballselect = {"Green Ball","Pink Ball"};
 
         ballchoice = new JComboBox(ballselect);
         ballchoice.setBounds(810, 360, 120, 25);
@@ -107,7 +107,7 @@ public class Main {
         linedisclaimer.setBounds(770, 420, 220, 25);
         screen.add(linedisclaimer);
 
-        String[] lineselect = {"Linie 1","Linie 2", "Linie 3", "Linie 4", "Linie 5","Linie 6"};
+        String[] lineselect = {"Linie 1","Linie 2", "Linie 3", "Linie 4", "Linie 5","Linie 6", "Linie 7"};
 
         linechoice = new JComboBox(lineselect);
         linechoice.setBounds(810, 460, 120, 25);
@@ -270,7 +270,7 @@ public class Main {
                 new Line(35,25,65,35),
                 new Line(0, 7,5,45),
                 new Line(10, 45,30,30),
-                new Line(6, 50,40,60),
+                new Line(6, 52,40,60),
                 new Line(40, 65,75,45),
                 new Line(0, 72,70,72),
                 new Line(0, 51,0,72),
@@ -280,8 +280,8 @@ public class Main {
 
     public static Marble[] defaultBallSettings(){
         Marble ball[] = {
+                new Marble(15, 67, 0, 0, 1.7, true, false),
                 new Marble(26, 59, 0, 0, 1.7, true, false),
-                new Marble(22, 11.5, 0, 0, 1.7, true, false),
                 resetMagnet1(),
                 resetMagnet2()
         };

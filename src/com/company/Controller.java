@@ -157,10 +157,12 @@ public class Controller {
                 ay = 0;
 
             }
+
             if (ballID == 3) {
                 ax = a_magnet2 * (path_x / normPath);
                 ay = a_magnet2 * (path_y / normPath);
             }
+
         }
     }
 
@@ -181,7 +183,7 @@ public class Controller {
 
         calcDistancePointLine(lineID, ballID);
         checkDirectionPointLine(ballID);
-
+        System.out.println(Screen.ball[0].getRollOn());
         //Verhindert, dass Y0 < als Y1 wird -> Fehler handling beim Rotieren
         double m;
         m = ((double) Screen.lines[closest].getY1() - (double) Screen.lines[closest].getY0()) / ((double) Screen.lines[closest].getX1() - (double) Screen.lines[closest].getX0());
@@ -216,7 +218,6 @@ public class Controller {
             if (m == 0 && vectorLength(tempvParallelX, tempvParallelY) > Screen.ball[ballID].getWeight() * Math.abs(gravity[1])) {
                 Screen.ball[ballID].setVelX_new(Screen.ball[ballID].getVelX_new() * heightLoss);
                 Screen.ball[ballID].setVelY_new(-1 * (Screen.ball[ballID].getVelY_new() * heightLoss));
-                System.out.println("hi");
             } else {
                 bounceOrRoll(ballID, m);
             }
@@ -229,7 +230,7 @@ public class Controller {
 
         //Beim Rollen wird geschaut, ob die Marble auf eine andere Linie trifft
         //Rollen wird kurzzeitig auf false gesetzt, damit der Collisioncheck wieder durchgeschaut werden kann
-        else if (Screen.ball[ballID].isRollen() && lineID != Screen.ball[ballID].getRollOn() && d <= detectionThreshold  && hitbox(closest, ballID, m)) {
+        else if (Screen.ball[ballID].isRollen() && lineID != Screen.ball[ballID].getRollOn() && d <= detectionThreshold && dotP < 0 && hitbox(closest, ballID, m)) {
             Screen.ball[ballID].setRollen(false);
             vectorZerlegungPointLine(closest, ballID);
 
@@ -239,7 +240,7 @@ public class Controller {
         }
 
         //Schaut, ob die Marble noch am Rollen ist (entweder nicht auf der Linie oder ist zu weit weg)
-        else if ((Screen.ball[ballID].isRollen() && ( (Screen.ball[ballID].getPosX() < Screen.lines[Screen.ball[ballID].getRollOn()].getX0()) ||Screen.ball[ballID].getPosX() > Screen.lines[Screen.ball[ballID].getRollOn()].getX1())))  {
+        else if ((Screen.ball[ballID].isRollen() && dotP < 0 &&  ( (Screen.ball[ballID].getPosX() < Screen.lines[Screen.ball[ballID].getRollOn()].getX0()) ||Screen.ball[ballID].getPosX() > Screen.lines[Screen.ball[ballID].getRollOn()].getX1())) || d > detectionThreshold)  {
             Screen.ball[ballID].setRollen(false);
         }
     }
@@ -307,8 +308,6 @@ public class Controller {
     //Kollisionshandling Marble mit Linie
     //skalar = v * rvGerade / |rvGerade|
     public static void vectorZerlegungPointLine(int lineID, int ballID) {
-        double richtungX = Screen.lines[lineID].getX1() - Screen.lines[lineID].getX0();
-        double richtungY = Screen.lines[lineID].getY1() - Screen.lines[lineID].getY0();
 
         skalar = (Screen.ball[ballID].getVelX_new() * (Screen.lines[lineID].getX1() - Screen.lines[lineID].getX0()) + Screen.ball[ballID].getVelY_new() * (Screen.lines[lineID].getY1() - Screen.lines[lineID].getY0())) /
                (Math.pow((Screen.lines[lineID].getX1() - Screen.lines[lineID].getX0()), 2) + Math.pow((Screen.lines[lineID].getY1() - Screen.lines[lineID].getY0()), 2));
@@ -353,7 +352,8 @@ public class Controller {
     // v_neu = -v + (2*skalar*rvGerade)
     public static void calcReflectingVector(int lineID, int ballID) {
         //Faktor für die Projektion des Richtungsvektor der Marble auf die Linie
-        double k = (Screen.ball[ballID].getVelX_new() * (Screen.lines[lineID].getX1() - Screen.lines[lineID].getX0()) + Screen.ball[ballID].getVelY_new() * (Screen.lines[lineID].getY1() - Screen.lines[lineID].getY0())) / (Math.pow(Screen.lines[lineID].getX1() - Screen.lines[lineID].getX0(), 2) + Math.pow(Screen.lines[lineID].getY1() - Screen.lines[lineID].getY0(), 2));
+        double k = (Screen.ball[ballID].getVelX_new() * (Screen.lines[lineID].getX1() - Screen.lines[lineID].getX0()) + Screen.ball[ballID].getVelY_new() * (Screen.lines[lineID].getY1() - Screen.lines[lineID].getY0()))
+                / (Math.pow(Screen.lines[lineID].getX1() - Screen.lines[lineID].getX0(), 2) + Math.pow(Screen.lines[lineID].getY1() - Screen.lines[lineID].getY0(), 2));
 
         Screen.ball[ballID].setVelX_new(heightLoss * (-Screen.ball[ballID].getVelX_new() + (2 * k * (Screen.lines[lineID].getX1() - Screen.lines[lineID].getX0()))));
         Screen.ball[ballID].setVelY_new(heightLoss * (-Screen.ball[ballID].getVelY_new() + (2 * k * (Screen.lines[lineID].getY1() - Screen.lines[lineID].getY0()))));
@@ -392,24 +392,22 @@ public class Controller {
             Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() + (fix * Math.abs((normX / normalizeNorm))));
             Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
             updateVelocityPosition(ballID);
-        } else if (dotP < 0 && d > 0.5 && m == 0) {
+        } else if (dotP < 0 && m == 0 && d > 0.5 ) {
             calcDistancePointLine(rollOn, ballID);
             fix = Math.abs(d - 0.5);
-
             Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
             updateVelocityPosition(ballID);
             calcDistancePointLine(rollOn, ballID);
-
         } else if (dotP < 0 && m == 0 && d < 0.5) {
             calcDistancePointLine(rollOn, ballID);
             fix = Math.abs(d - 0.5);
-
             Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
             updateVelocityPosition(ballID);
         }
 
-        //Wenn die Kugel unterhalb der Linie liegt
-        else if (dotP > 0 && m > 0 && d < 0.5) {
+
+        //Wenn die Kugel unerhalb der Linie liegt
+        if (dotP > 0 && m > 0 && d < 0.5) {
             calcDistancePointLine(rollOn, ballID);
             fix = Math.abs(d - 0.5);
             Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() - (fix * Math.abs((normX / normalizeNorm))));
@@ -433,17 +431,19 @@ public class Controller {
             Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() - (fix * Math.abs((normX / normalizeNorm))));
             Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
             updateVelocityPosition(ballID);
-        } else if (dotP > 0 && d > 0.5 && m == 0) {
+        } else if (dotP > 0 && m == 0 && d > 0.5 ) {
             calcDistancePointLine(rollOn, ballID);
             fix = Math.abs(d - 0.5);
             Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
             updateVelocityPosition(ballID);
+            calcDistancePointLine(rollOn, ballID);
         } else if (dotP > 0 && m == 0 && d < 0.5) {
             calcDistancePointLine(rollOn, ballID);
             fix = Math.abs(d - 0.5);
             Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
             updateVelocityPosition(ballID);
         }
+
     }
 
     //Collision Handler Marble mit Marble
@@ -473,6 +473,7 @@ public class Controller {
                 fixClipping(1, 3);
                 //deaktiviert Magnete nach dem Zusammenstoss
                 if (Screen.ball[2].getPosX_new() < 52) {
+
                     Screen.ball[2].setMovable(false);
                     Screen.ball[3].setMovable(false);
 
@@ -558,9 +559,9 @@ public class Controller {
     // a = F / m
     public static void magneticPull(int magnet1, int magnet2) {
         double feldKonstante = 4 * Math.PI * Math.pow(10, -7);                      //Naturkonstante bei Magnetismus
-        double magnetesierbarkeit = 100000;                                         //Speziellegierung
+        double magnetesierbarkeit = 200000;                                         //Speziellegierung
         double r = vectorLength(Screen.ball[magnet1].getPosX() - Screen.ball[magnet2].getPosX(),Screen.ball[magnet1].getPosY() - Screen.ball[magnet2].getPosY() );
-        double I = 230;                                                             //Stromstarke in Ampere
+        double I = 100;                                                             //Stromstarke in Ampere
 
         double B = feldKonstante * magnetesierbarkeit * (I / (2 * Math.PI * r));    //Magnetische Flussdichte in Tesla -> Staerke des Magnetfeldes
         double F = I * B * (Screen.diameter / Screen.scale);                        //Magnetische Anziehungskraft
