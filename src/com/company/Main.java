@@ -16,7 +16,7 @@ public class Main {
     static JCheckBox linemovement;
     static int x;
     static int y;
-    public static JLabel currentCoordinate = new JLabel("Current Coordinate: [" +Screen.ball[0].getPosX()+ ", " + Screen.ball[0].getPosY() + "]");
+    public static JLabel currentCoordinate = new JLabel("  Current Coordinate: [" +Screen.ball[0].getPosX()+ ", " + Screen.ball[0].getPosY() + "]");
     //y-richtung anpassen -> wie in echt
     public static void main(String[] args) {
 
@@ -109,11 +109,11 @@ public class Main {
         field = new Screen();
 
         JLabel linedisclaimer = new JLabel("Linke Seite = Linke Maustaste");
-        linedisclaimer.setBounds(770, 400, 220, 25);
+        linedisclaimer.setBounds(793, 400, 220, 25);
         screen.add(linedisclaimer);
 
         JLabel linedisclaimer2 = new JLabel("Rechte Seite = Rechte Maustaste");
-        linedisclaimer2.setBounds(770, 420, 220, 25);
+        linedisclaimer2.setBounds(781, 420, 220, 25);
         screen.add(linedisclaimer2);
         String[] lineselect = {"Linie 1","Linie 2", "Linie 3", "Linie 4", "Linie 5","Linie 6"};
 
@@ -128,7 +128,7 @@ public class Main {
         screen.add(linechoice);
 
         linemovement = new JCheckBox("<-- Linien Verschieben");
-        linemovement.setBounds(780, 500, 180, 25);
+        linemovement.setBounds(781, 500, 180, 25);
         linemovement.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
