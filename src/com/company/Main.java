@@ -269,6 +269,7 @@ public class Main {
 
         Screen.ball[ballchoice.getSelectedIndex()].setPosX(posx_val);
         Screen.ball[ballchoice.getSelectedIndex()].setPosY(posy_val);
+        Screen.ball[ballchoice.getSelectedIndex()].setRollen(false);
 
         posx_field.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getPosX()));
         posy_field.setText(Double.toString(newY(Screen.ball[ballchoice.getSelectedIndex()].getPosY())));
