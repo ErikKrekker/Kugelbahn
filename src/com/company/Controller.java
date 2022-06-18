@@ -183,7 +183,7 @@ public class Controller {
 
         calcDistancePointLine(lineID, ballID);
         checkDirectionPointLine(ballID);
-        System.out.println(Screen.ball[0].getRollOn());
+        //System.out.println(Screen.ball[0].getRollOn());
         //Verhindert, dass Y0 < als Y1 wird -> Fehler handling beim Rotieren
         double m;
         m = ((double) Screen.lines[closest].getY1() - (double) Screen.lines[closest].getY0()) / ((double) Screen.lines[closest].getX1() - (double) Screen.lines[closest].getX0());
@@ -455,7 +455,7 @@ public class Controller {
 
         //Marble befinden sich genau nebeneinander oder ineinander
         if (d_balls <= (Screen.diameter / Screen.scale)) {
-
+            System.out.println();
             //aktiviert die Magnete
             if (Screen.ball[ball_a].isMagnet() && !Screen.ball[ball_a].isMovable() || Screen.ball[ball_b].isMagnet() && !Screen.ball[ball_b].isMovable()) {
                 Screen.ball[2].setMovable(true);
@@ -472,7 +472,7 @@ public class Controller {
                 fixClipping(1, 2);
                 fixClipping(1, 3);
                 //deaktiviert Magnete nach dem Zusammenstoss
-                if (Screen.ball[2].getPosX_new() < 52) {
+                if (Screen.ball[2].getPosX_new() < 50 || Screen.ball[3].getPosX_new() < 50 ) {
 
                     Screen.ball[2].setMovable(false);
                     Screen.ball[3].setMovable(false);
@@ -489,20 +489,26 @@ public class Controller {
 
                     Screen.ball[3].setVelX_new(0);
                     Screen.ball[3].setVelY_new(0);
+
                   //Vollkommen unelastischer Stoss bei den Magneten
                 } else {
                     unelastischerStoss(2, 3);
                 }
               //elastischer Stoss
             } else {
+                System.out.println("hi");
+                calcDistancePointPoint(ball_a, ball_b);
                 elastischerStoss(ball_a, ball_b);
                 double normLine = vectorLength(x_line, y_line);
                 double offset = Math.abs(d_balls - Screen.diameter / Screen.scale);
+
                 //Versetzt die Kugeln entlangt der Beruehrnormalen so, dass diese nicht ineinander liegen & knapp aus der Kollisionserkennung liegt (die linkere Marble wird ermittelt und versetz)
-                if (Screen.ball[ball_a].getPosX_new() < Screen.ball[ball_b].getPosX_new()) {
-                    Screen.ball[ball_a].setPosX_new(Screen.ball[ball_a].getPosX_new() - (offset * Math.abs((x_line / normLine))) - 0.01);
-                } else if (Screen.ball[ball_a].getPosX_new() > Screen.ball[ball_b].getPosX_new()) {
-                    Screen.ball[ball_b].setPosX_new(Screen.ball[ball_b].getPosX_new() - (offset * Math.abs((x_line / normLine))) - 0.01);
+                if(d_balls <= Screen.diameter / Screen.scale) {
+                    if (Screen.ball[ball_a].getPosX_new() < Screen.ball[ball_b].getPosX_new()) {
+                        Screen.ball[ball_a].setPosX_new(Screen.ball[ball_a].getPosX_new() - (offset * Math.abs((x_line / normLine))) - 0.01);
+                    } else if (Screen.ball[ball_a].getPosX_new() > Screen.ball[ball_b].getPosX_new()) {
+                        Screen.ball[ball_b].setPosX_new(Screen.ball[ball_b].getPosX_new() - (offset * Math.abs((x_line / normLine))) - 0.01);
+                    }
                 }
             }
 
