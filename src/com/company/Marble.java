@@ -134,7 +134,6 @@ public class Marble {
 
     public void setMovable(boolean movable){ this.movable = movable; }
 
-
     public void setWeight(double weight) {
         this.weight = weight;
     }

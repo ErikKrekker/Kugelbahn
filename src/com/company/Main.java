@@ -108,11 +108,11 @@ public class Main {
 
         field = new Screen();
 
-        JLabel linedisclaimer = new JLabel("Rechte Seite = Rechte Maustaste");
+        JLabel linedisclaimer = new JLabel("Linke Seite = Linke Maustaste");
         linedisclaimer.setBounds(770, 400, 220, 25);
         screen.add(linedisclaimer);
 
-        JLabel linedisclaimer2 = new JLabel("Linke Seite = Linke Maustaste");
+        JLabel linedisclaimer2 = new JLabel("Rechte Seite = Rechte Maustaste");
         linedisclaimer2.setBounds(770, 420, 220, 25);
         screen.add(linedisclaimer2);
         String[] lineselect = {"Linie 1","Linie 2", "Linie 3", "Linie 4", "Linie 5","Linie 6"};
@@ -160,7 +160,7 @@ public class Main {
         });
 
         screen.add(field);
-        positionUpdate = new JButton("Update World");
+        positionUpdate = new JButton("Update Kugel");
         positionUpdate.setBounds(780, 300, 190, 25);
         positionUpdate.addActionListener(e -> programmupdate(posx_val,posy_val,velx_val,vely_val,windx_val,windy_val,field));
         screen.add(positionUpdate);
@@ -294,4 +294,11 @@ public class Main {
         currentCoordinate.setText("Current Coordinate: [" + pos_x + ", " + pos_y + "]");
     }
 
+    public static int newY(int y){
+        return 75 - y;
+    }
+
+    public static double newY(double y){
+        return 75 - y;
+    }
 }

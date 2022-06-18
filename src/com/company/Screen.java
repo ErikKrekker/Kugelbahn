@@ -144,11 +144,11 @@ public class Screen extends JPanel implements Runnable {
         g2.drawLine((int)(ball[1].getPosX() * scale), (int)(ball[1].getPosY() * scale), (int)((ball[1].getPosX() + ball[1].getVelX()) * scale), (int)((ball[1].getPosY() + ball[1].getVelY()) * scale));
 
 
-        g2.setColor(Color.white);
+        g2.setColor(Color.gray);
         g2.fillOval((int)((ball[2].getPosX()*scale - radius)) ,(int)((ball[2].getPosY()*scale - radius)), diameter, diameter);
         g2.drawLine((int)(ball[2].getPosX() * scale), (int)(ball[2].getPosY() * scale), (int)((ball[2].getPosX() + ball[2].getVelX()) * scale), (int)((ball[2].getPosY() + ball[2].getVelY()) * scale));
 
-        g2.setColor(Color.gray);
+
         g2.fillOval((int)((ball[3].getPosX()*scale - radius)) ,(int)((ball[3].getPosY()*scale - radius)), diameter, diameter);
         g2.drawLine((int)(ball[3].getPosX() * scale), (int)(ball[3].getPosY() * scale), (int)((ball[3].getPosX() + ball[3].getVelX()) * scale), (int)((ball[3].getPosY() + ball[3].getVelY()) * scale));
         g2.dispose();
