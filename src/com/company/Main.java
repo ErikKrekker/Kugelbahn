@@ -8,13 +8,16 @@ import java.awt.event.MouseEvent;
 
 
 public class Main {
+    static Screen field;
+    static JButton positionUpdate;
+    static JButton start;
     static JComboBox ballchoice;
     static JComboBox linechoice;
     static JCheckBox linemovement;
     static int x;
     static int y;
-    public static JLabel currentCoordinate = new JLabel("Current Coordinate: [" + Screen.ball[0].getPosX()+ ", " + newY(Screen.ball[0].getPosY()) + "]");
-
+    public static JLabel currentCoordinate = new JLabel("Current Coordinate: [" +Screen.ball[0].getPosX()+ ", " + Screen.ball[0].getPosY() + "]");
+    //y-richtung anpassen -> wie in echt
     public static void main(String[] args) {
 
 
@@ -24,11 +27,13 @@ public class Main {
         window.setTitle("Controller");
 
         //Start settings
+
         Controller.wind[0] = 0;
         Controller.wind[1] = 0;
 
         Controller.gravity[0] = 0;
-        Controller.gravity[1] = 9.81;
+        //Controller.gravity[1] = -9.81;
+        Controller.gravity[1] = 10;
 
 
         JPanel screen = new JPanel();
@@ -101,13 +106,16 @@ public class Main {
         currentCoordinate.setBounds(780, 540, 190, 25);
         screen.add(currentCoordinate);
 
-        Screen field = new Screen();
+        field = new Screen();
 
-        JLabel linedisclaimer = new JLabel("P1 = Linke Maus | P2 = Rechte Maus");
-        linedisclaimer.setBounds(770, 420, 220, 25);
+        JLabel linedisclaimer = new JLabel("Rechte Seite = Rechte Maustaste");
+        linedisclaimer.setBounds(770, 400, 220, 25);
         screen.add(linedisclaimer);
 
-        String[] lineselect = {"Linie 1","Linie 2", "Linie 3", "Linie 4", "Linie 5","Linie 6", "Linie 7"};
+        JLabel linedisclaimer2 = new JLabel("Linke Seite = Linke Maustaste");
+        linedisclaimer2.setBounds(770, 420, 220, 25);
+        screen.add(linedisclaimer2);
+        String[] lineselect = {"Linie 1","Linie 2", "Linie 3", "Linie 4", "Linie 5","Linie 6"};
 
         linechoice = new JComboBox(lineselect);
         linechoice.setBounds(810, 460, 120, 25);
@@ -138,21 +146,26 @@ public class Main {
             public void mouseClicked(MouseEvent e) {
                 x = e.getX() / Screen.scale;
                 y = (e.getY() / Screen.scale);
+                //y = (e.getY() / Screen.scale) * -1;
                 if (linemovement.isSelected()){
                     placeline(x,y,field,e);
                 }else{
-                    placeball(x,newY(y),currentCoordinate,field,posx_val,posy_val);
+
+                    placeball(x,y,currentCoordinate,field,posx_val,posy_val);
+
                 }
+
+
             }
         });
 
         screen.add(field);
-        JButton positionUpdate = new JButton("Update Marbles");
+        positionUpdate = new JButton("Update World");
         positionUpdate.setBounds(780, 300, 190, 25);
         positionUpdate.addActionListener(e -> programmupdate(posx_val,posy_val,velx_val,vely_val,windx_val,windy_val,field));
         screen.add(positionUpdate);
 
-        JButton start = new JButton("GO!");
+        start = new JButton("GO!");
         start.setBounds(780, 260, 80, 25);
         start.addActionListener(e -> programmstart(field, start, positionUpdate));
         screen.add(start);
@@ -161,6 +174,11 @@ public class Main {
         pause.setBounds(890, 260, 80, 25);
         pause.addActionListener(e -> programmpause(field, start, positionUpdate));
         screen.add(pause);
+
+        JButton resetWorld = new JButton("Reset Balls");
+        resetWorld.setBounds(780, 700, 190, 25);
+        resetWorld.addActionListener(e -> programmreset(field, start, positionUpdate,posx_val,posy_val,velx_val,vely_val,windx_val,windy_val ));
+        screen.add(resetWorld);
 
 
 
@@ -195,7 +213,7 @@ public class Main {
     public static void programmupdate(JTextField posx_val,JTextField posy_val, JTextField velx_val,JTextField vely_val, JTextField windx_val,JTextField windy_val,  Screen field) {
 
         double positionX = Double.parseDouble(posx_val.getText());
-        double positionY = newY(Double.parseDouble(posy_val.getText()));
+        double positionY = Double.parseDouble(posy_val.getText());
 
         double velX = Double.parseDouble(velx_val.getText());
         double velY = Double.parseDouble(vely_val.getText());
@@ -207,49 +225,63 @@ public class Main {
         Screen.ball[ballchoice.getSelectedIndex()].setPosY(positionY);
 
         Screen.ball[ballchoice.getSelectedIndex()].setVelX(velX);
-        Screen.ball[ballchoice.getSelectedIndex()].setVelY(-1 * velY);
+        Screen.ball[ballchoice.getSelectedIndex()].setVelY(velY);
 
         Controller.wind[0] = windX;
-        Controller.wind[1] = -1 * windY;
+        Controller.wind[1] = windY;
 
         field.repaint();
         for(int i = 0; i < Screen.ball.length; i++) {
             Screen.ball[i].setRollen(false);
+
         }
 
-        Screen.ball[2] = resetMagnet1();
-        Screen.ball[3] = resetMagnet2();
     }
 
+    public static void programmreset(Screen field, JButton start, JButton update,JTextField posx_val,JTextField posy_val, JTextField velx_val,JTextField vely_val, JTextField windx_val,JTextField windy_val){
+        for (int i = 0; i < Screen.ball.length; i++){
+
+            for(int j = 0; j <= Screen.startvalues.length; j++) {
+
+                switch (j){
+                    case 0 :
+                        Screen.ball[i].setPosX(Screen.startvalues[i][j]);
+                    case 1 :
+                        Screen.ball[i].setPosY(Screen.startvalues[i][j]);
+                    case 2 :
+                        Screen.ball[i].setVelX(Screen.startvalues[i][j]);
+                    case 3 :
+                        Screen.ball[i].setVelY(Screen.startvalues[i][j]);
+                    case 4 :
+                        Screen.ball[i].setWeight(Screen.startvalues[i][j]);
+                }
+                programmpause(field, start, update);
+                programmupdate(posx_val,posy_val,velx_val, vely_val,windx_val, windy_val, field);
+
+            }
+        }
+    }
 
     public static void placeball(int posx_val, int posy_val, JLabel currentCoordinate, Screen field, JTextField posx_field, JTextField posy_field){
 
         Screen.ball[ballchoice.getSelectedIndex()].setPosX(posx_val);
-        Screen.ball[ballchoice.getSelectedIndex()].setPosY(newY(posy_val));
+        Screen.ball[ballchoice.getSelectedIndex()].setPosY(posy_val);
 
         posx_field.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getPosX()));
-        posy_field.setText(Double.toString(newY(Screen.ball[ballchoice.getSelectedIndex()].getPosY())));
+        posy_field.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getPosY()));
 
-        currentCoordinate.setText("Current Coordinate: [" + (double) posx_val + ", " + (double)posy_val + "]");
+        currentCoordinate.setText("Current Coordinate: [" + (double) posx_val + ", " + (double) posy_val + "]");
 
         field.repaint();
 
     }
 
     public static void placeline(int posx_val, int posy_val, Screen field, MouseEvent e) {
-        if(e.getButton() == MouseEvent.BUTTON1){
-            if(posx_val > Screen.lines[linechoice.getSelectedIndex()].getX1()){
-                Screen.lines[linechoice.getSelectedIndex()].setP1(Screen.lines[linechoice.getSelectedIndex()].getX1(), posy_val);
-            }else{
-                Screen.lines[linechoice.getSelectedIndex()].setP1(posx_val, posy_val);
-            }
 
+        if(e.getButton() == MouseEvent.BUTTON1){
+            Screen.lines[linechoice.getSelectedIndex()].setP1(posx_val, posy_val);
         }else if(e.getButton() == MouseEvent.BUTTON3){
-            if(posx_val < Screen.lines[linechoice.getSelectedIndex()].getX1()){
-                Screen.lines[linechoice.getSelectedIndex()].setP2(Screen.lines[linechoice.getSelectedIndex()].getX0(), posy_val);
-            }else{
-                Screen.lines[linechoice.getSelectedIndex()].setP2(posx_val, posy_val);
-            }
+            Screen.lines[linechoice.getSelectedIndex()].setP2(posx_val, posy_val);
         }
 
 
@@ -262,46 +294,6 @@ public class Main {
         int pos_x = (int)Screen.ball[ballchoice.getSelectedIndex()].getPosX();
         int pos_y = (int)Screen.ball[ballchoice.getSelectedIndex()].getPosY();
         currentCoordinate.setText("Current Coordinate: [" + pos_x + ", " + pos_y + "]");
-    }
-
-    public static Line[] defaultLineSettings(){
-        Line[] lines ={
-                new Line(5,8,35,22),
-                new Line(35,25,65,35),
-                new Line(0, 7,5,45),
-                new Line(10, 45,30,30),
-                new Line(6, 52,40,60),
-                new Line(40, 65,75,45),
-                new Line(0, 72,70,72),
-                new Line(0, 51,0,72),
-        };
-        return lines;
-    }
-
-    public static Marble[] defaultBallSettings(){
-        Marble ball[] = {
-                new Marble(15, 67, 0, 0, 1.7, true, false),
-                new Marble(26, 59, 0, 0, 1.7, true, false),
-                resetMagnet1(),
-                resetMagnet2()
-        };
-        return ball;
-    }
-
-    public static Marble resetMagnet1(){
-        return new Marble(54, 44.2, 0, 0, 2, false, true);
-    }
-
-    public static Marble resetMagnet2(){
-        return new Marble(58, 42.9, 0, 0, 2, false, true);
-    }
-
-    public static int newY(int y){
-        return 75 - y;
-    }
-
-    public static double newY(double y){
-        return 75 - y;
     }
 
 }
