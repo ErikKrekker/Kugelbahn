@@ -30,7 +30,7 @@ public class Marble {
         this.velX = velX;
         this.velY = velY;
         this.posX = posX;
-        this.posY = posY;
+        this.posY = Main.newY(posY);
         this.weight = weight;
         this.movable = movable;
         this.magnet = magnet;
