@@ -36,6 +36,13 @@ public class Screen extends JPanel implements Runnable {
             new Line(70, 0,70,72),
     };
 
+    static double[][] startvalues = {
+            {62, 24.3, 0, 0, 1.7},
+            {22, 11.5, 0, 0, 1.7},
+            {54, 30.8, 0, 0, 2},
+            {58, 32.1, 0, 0, 2}
+    };
+
     static Marble ball[] = {
             new Marble(62, 24.3, 0, 0, 1.7, true, false),
             new Marble(22, 11.5, 0, 0, 1.7, true, false),
@@ -98,7 +105,10 @@ public class Screen extends JPanel implements Runnable {
         }else if(outOfBounds){
             outOfBounds = false;
             JOptionPane.showMessageDialog(null, "Durchlauf beendet" +"\n" + "'Update Marble' drücken zur Vorbereitung eines weiteren Durchlaufes");
+            Main.start.setEnabled(true);
+            Main.positionUpdate.setEnabled(true);
             thread.stop();
+
         }
 
     }
@@ -153,6 +163,5 @@ public class Screen extends JPanel implements Runnable {
             outOfBounds = true;
             System.out.println("--------ENDE---------");
         }
-
     }
 }

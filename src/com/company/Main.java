@@ -8,6 +8,9 @@ import java.awt.event.MouseEvent;
 
 
 public class Main {
+    static Screen field;
+    static JButton positionUpdate;
+    static JButton start;
     static JComboBox ballchoice;
     static JComboBox linechoice;
     static JCheckBox linemovement;
@@ -94,7 +97,7 @@ public class Main {
         windy_val.setText(String.valueOf(Controller.wind[1]));
         screen.add(windy_val);
 
-        String[] ballselect = {"Green Ball","Pink Ball", "White Ball", "Black Ball"};
+        String[] ballselect = {"Green Ball","Pink Ball"};
 
         ballchoice = new JComboBox(ballselect);
         ballchoice.setBounds(810, 360, 120, 25);
@@ -103,12 +106,15 @@ public class Main {
         currentCoordinate.setBounds(780, 540, 190, 25);
         screen.add(currentCoordinate);
 
-        Screen field = new Screen();
+        field = new Screen();
 
-        JLabel linedisclaimer = new JLabel("P1 = Linke Maus | P2 = Rechte Maus");
-        linedisclaimer.setBounds(770, 420, 220, 25);
+        JLabel linedisclaimer = new JLabel("Rechte Seite = Rechte Maustaste");
+        linedisclaimer.setBounds(770, 400, 220, 25);
         screen.add(linedisclaimer);
 
+        JLabel linedisclaimer2 = new JLabel("Linke Seite = Linke Maustaste");
+        linedisclaimer2.setBounds(770, 420, 220, 25);
+        screen.add(linedisclaimer2);
         String[] lineselect = {"Linie 1","Linie 2", "Linie 3", "Linie 4", "Linie 5","Linie 6"};
 
         linechoice = new JComboBox(lineselect);
@@ -154,12 +160,12 @@ public class Main {
         });
 
         screen.add(field);
-        JButton positionUpdate = new JButton("Update Marble");
+        positionUpdate = new JButton("Update World");
         positionUpdate.setBounds(780, 300, 190, 25);
         positionUpdate.addActionListener(e -> programmupdate(posx_val,posy_val,velx_val,vely_val,windx_val,windy_val,field));
         screen.add(positionUpdate);
 
-        JButton start = new JButton("GO!");
+        start = new JButton("GO!");
         start.setBounds(780, 260, 80, 25);
         start.addActionListener(e -> programmstart(field, start, positionUpdate));
         screen.add(start);
@@ -168,6 +174,11 @@ public class Main {
         pause.setBounds(890, 260, 80, 25);
         pause.addActionListener(e -> programmpause(field, start, positionUpdate));
         screen.add(pause);
+
+        JButton resetWorld = new JButton("Reset Balls");
+        resetWorld.setBounds(780, 700, 190, 25);
+        resetWorld.addActionListener(e -> programmreset(field, start, positionUpdate,posx_val,posy_val,velx_val,vely_val,windx_val,windy_val ));
+        screen.add(resetWorld);
 
 
 
@@ -227,6 +238,29 @@ public class Main {
 
     }
 
+    public static void programmreset(Screen field, JButton start, JButton update,JTextField posx_val,JTextField posy_val, JTextField velx_val,JTextField vely_val, JTextField windx_val,JTextField windy_val){
+        for (int i = 0; i < Screen.ball.length; i++){
+
+            for(int j = 0; j <= Screen.startvalues.length; j++) {
+
+                switch (j){
+                    case 0 :
+                        Screen.ball[i].setPosX(Screen.startvalues[i][j]);
+                    case 1 :
+                        Screen.ball[i].setPosY(Screen.startvalues[i][j]);
+                    case 2 :
+                        Screen.ball[i].setVelX(Screen.startvalues[i][j]);
+                    case 3 :
+                        Screen.ball[i].setVelY(Screen.startvalues[i][j]);
+                    case 4 :
+                        Screen.ball[i].setWeight(Screen.startvalues[i][j]);
+                }
+                programmpause(field, start, update);
+                programmupdate(posx_val,posy_val,velx_val, vely_val,windx_val, windy_val, field);
+
+            }
+        }
+    }
 
     public static void placeball(int posx_val, int posy_val, JLabel currentCoordinate, Screen field, JTextField posx_field, JTextField posy_field){
 
