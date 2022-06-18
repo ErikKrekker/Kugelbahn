@@ -175,7 +175,7 @@ public class Main {
         pause.addActionListener(e -> programmpause(field, start, positionUpdate));
         screen.add(pause);
 
-        JButton resetWorld = new JButton("Reset Balls");
+        JButton resetWorld = new JButton("Reset All");
         resetWorld.setBounds(780, 700, 190, 25);
         resetWorld.addActionListener(e -> programmreset(field, start, positionUpdate,posx_val,posy_val,velx_val,vely_val,windx_val,windy_val ));
         screen.add(resetWorld);
@@ -283,8 +283,6 @@ public class Main {
         }else if(e.getButton() == MouseEvent.BUTTON3){
             Screen.lines[linechoice.getSelectedIndex()].setP2(posx_val, posy_val);
         }
-
-
         field.repaint();
     }
 
