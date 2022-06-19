@@ -92,11 +92,11 @@ public class Main {
         screen.add(windy);
 
         JTextField windy_val = new JTextField();
-        windy_val.setBounds(890, 220, 80, 25);
+        windy_val.setBounds(890, 0, 80, 25);
         windy_val.setText(String.valueOf(Controller.wind[1]));
         screen.add(windy_val);
 
-        String[] ballselect = {"Green Ball","Pink Ball"};
+        String[] ballselect = {"Blauer Ball","Gelber Ball"};
 
         ballchoice = new JComboBox(ballselect);
         ballchoice.setBounds(810, 345, 120, 25);
@@ -114,7 +114,7 @@ public class Main {
         JLabel linedisclaimer2 = new JLabel("Rechte Seite = Rechte Maustaste");
         linedisclaimer2.setBounds(781, 420, 220, 25);
         screen.add(linedisclaimer2);
-        String[] lineselect = {"Linie 1","Linie 2", "Linie 3", "Linie 4", "Linie 5","Linie 6"};
+        String[] lineselect = {"Linie 1","Linie 2", "Linie 3", "Linie 4", "Linie 5","Linie 6", "Linie 7",};
 
         linechoice = new JComboBox(lineselect);
         linechoice.setBounds(810, 460, 120, 25);
@@ -229,16 +229,18 @@ public class Main {
         Controller.wind[0] = windX;
         Controller.wind[1] = -1*windY;
 
-        field.repaint();
         for(int i = 0; i < Screen.ball.length; i++) {
             Screen.ball[i].setRollen(false);
         }
         Screen.ball[2] = resetMagnet1();
         Screen.ball[3] = resetMagnet2();
 
+        field.repaint();
+
     }
 
     public static void programmreset(Screen field, JButton start, JButton update,JTextField posx_val,JTextField posy_val, JTextField velx_val,JTextField vely_val, JTextField windx_val,JTextField windy_val){
+
 
         for (int i = 0; i < Screen.ball.length; i++){
 
@@ -247,22 +249,74 @@ public class Main {
                 switch (j){
                     case 0 :
                         Screen.ball[i].setPosX(Screen.startvalues[i][j]);
+                        break;
                     case 1 :
                         Screen.ball[i].setPosY(Screen.startvalues[i][j]);
+                        break;
                     case 2 :
                         Screen.ball[i].setVelX(Screen.startvalues[i][j]);
+                        break;
                     case 3 :
                         Screen.ball[i].setVelY(Screen.startvalues[i][j]);
+                        break;
                     case 4 :
                         Screen.ball[i].setWeight(Screen.startvalues[i][j]);
+                        break;
                 }
-                programmpause(field, start, update);
-                programmupdate(posx_val,posy_val,velx_val, vely_val,windx_val, windy_val, field);
+              //  programmpause(field, start, update);
+            //    programmupdate(posx_val,posy_val,velx_val, vely_val,windx_val, windy_val, field);
 
             }
 
         }
+        Screen.ball[2] = resetMagnet1();
+        Screen.ball[3] = resetMagnet2();
 
+        for (int i = 0; i < Screen.lines.length; i++) {
+
+            for (int j = 0; j <= Screen.startvaluesline.length; j++) {
+
+                switch (j) {
+                    case 0:
+                        Screen.lines[i].setX0(Screen.startvaluesline[i][j]);
+                        System.out.println(Screen.startvaluesline[i][j]);
+                        break;
+                    case 1:
+                        Screen.lines[i].setY0(Screen.startvaluesline[i][j]);
+                        System.out.println(Screen.startvaluesline[i][j]);
+                        break;
+
+                    case 2:
+                        Screen.lines[i].setX1(Screen.startvaluesline[i][j]);
+                        System.out.println(Screen.startvaluesline[i][j]);
+                        break;
+
+                    case 3:
+                        Screen.lines[i].setY1(Screen.startvaluesline[i][j]);
+                        System.out.println(Screen.startvaluesline[i][j]);
+                        break;
+                }
+            }
+        }
+
+        Controller.wind[0] = 0;
+        Controller.wind[1] = 0;
+
+        Controller.gravity[0] = 0;
+        Controller.gravity[1] = 9.81;
+
+        posx_val.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getPosX()));
+        posy_val.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getPosY()));
+
+        velx_val.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getVelX()));
+        vely_val.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getVelY()));
+
+        windx_val.setText(Double.toString(Controller.wind[0]));
+        windy_val.setText(Double.toString(Controller.wind[1]));
+
+        //.setText("62");
+
+        field.repaint();
     }
 
     public static void placeball(int posx_val, int posy_val, JLabel currentCoordinate, Screen field, JTextField posx_field, JTextField posy_field){
@@ -318,6 +372,7 @@ public class Main {
                 new Line(40, 65,75,45),
                 new Line(0, 72,70,72),
                 new Line(0, 51,0,72),
+
         };
         return lines;
     }

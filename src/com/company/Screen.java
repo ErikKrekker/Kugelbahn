@@ -27,10 +27,24 @@ public class Screen extends JPanel implements Runnable {
     static Line lines[] = Main.defaultLineSettings();
 
     static double[][] startvalues = {
-            {26, 70, 0, 0, 1.7},
-            {22, 27, 0, 0, 1.7},
+
+            {26, 59, 0, 0, 1.7},
+            {22, 11.5, 0, 0, 1.7},
             {54, 30.8, 0, 0, 2},
             {58, 32.1, 0, 0, 2}
+    };
+
+    static int[][] startvaluesline = {
+
+            {5,8,35,22},
+            {35, 25, 65, 35},
+            {0, 7, 5, 45},
+            {10, 45, 30, 30},
+            {6, 50, 40, 60},
+            {40, 65, 75, 45},
+            {0, 72, 70, 72},
+            {0, 51, 0, 72}
+
     };
 
     static Marble ball[] = Main.defaultBallSettings();

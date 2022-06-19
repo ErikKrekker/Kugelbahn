@@ -183,7 +183,6 @@ public class Controller {
 
         calcDistancePointLine(lineID, ballID);
         checkDirectionPointLine(ballID);
-        System.out.println(Screen.ball[0].isRollen());
         //Verhindert, dass Y0 < als Y1 wird -> Fehler handling beim Rotieren
         double m;
         m = ((double) Screen.lines[closest].getY1() - (double) Screen.lines[closest].getY0()) / ((double) Screen.lines[closest].getX1() - (double) Screen.lines[closest].getX0());
