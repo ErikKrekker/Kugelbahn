@@ -24,30 +24,9 @@ public class Screen extends JPanel implements Runnable {
     //!!ACHTUNG BEI LINIENERSTELLUNG!!
     //x0 muss immer kleiner als x1 sein
 
-    static Line lines[] = Main.defaultLineSettings();
+    static Line[] lines = Main.defaultLineSettings();
 
-    static double[][] startvalues = {
-
-            {26, 59, 0, 0, 1.7},
-            {22, 11.5, 0, 0, 1.7},
-            {54, 30.8, 0, 0, 2},
-            {58, 32.1, 0, 0, 2}
-    };
-
-    static int[][] startvaluesline = {
-
-            {5,8,35,22},
-            {35, 25, 65, 35},
-            {0, 7, 5, 45},
-            {10, 45, 30, 30},
-            {6, 50, 40, 60},
-            {40, 65, 75, 45},
-            {0, 72, 70, 72},
-            {0, 51, 0, 72}
-
-    };
-
-    static Marble ball[] = Main.defaultBallSettings();
+    static Marble[] ball = Main.defaultBallSettings();
 
     public Screen() {
 
@@ -120,11 +99,10 @@ public class Screen extends JPanel implements Runnable {
         g2 = (Graphics2D)g;
         //Zeichnen der Linien
         for (int i = 0; i < lines.length; i++){
-            if(i == Main.linechoice.getSelectedIndex() && Main.linemovement.isSelected()){
+            if(i == Main.linechoice.getSelectedIndex()+1 && Main.linemovement.isSelected()){
                 g2.setColor((Color.red));
-            }else{
+            }else
                 g2.setColor(Color.white);
-            }
             g2.drawLine(lines[i].getX0() * scale, lines[i].getY0() * scale, lines[i].getX1() * scale, lines[i].getY1() * scale);
         }
 

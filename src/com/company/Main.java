@@ -17,7 +17,7 @@ public class Main {
     static int x;
     static int y;
     public static JLabel currentCoordinate = new JLabel(" Kugel Position: [" +Screen.ball[0].getPosX()+ ", " + newY(Screen.ball[0].getPosY()) + "]");
-    //y-richtung anpassen -> wie in echt
+
     public static void main(String[] args) {
 
 
@@ -38,7 +38,6 @@ public class Main {
         JPanel screen = new JPanel();
         screen.setLayout(null);
         window.setPreferredSize(new Dimension(1000, 800));
-        //  window.setDoubleBuffered(true);
         window.setFocusable(true);
 
 
@@ -57,8 +56,9 @@ public class Main {
 
         JTextField posy_val = new JTextField();
         posy_val.setBounds(890, 60, 80, 25);
-        posy_val.setText(String.valueOf(Screen.ball[0].getPosY()));
+        posy_val.setText(String.valueOf(newY(Screen.ball[0].getPosY())));
         screen.add(posy_val);
+
 
         JLabel velx = new JLabel("Geschw X: ");
         velx.setBounds(780, 100, 80, 25);
@@ -92,7 +92,7 @@ public class Main {
         screen.add(windy);
 
         JTextField windy_val = new JTextField();
-        windy_val.setBounds(890, 0, 80, 25);
+        windy_val.setBounds(890, 220, 80, 25);
         windy_val.setText(String.valueOf(Controller.wind[1]));
         screen.add(windy_val);
 
@@ -145,7 +145,6 @@ public class Main {
             public void mouseClicked(MouseEvent e) {
                 x = e.getX() / Screen.scale;
                 y = (e.getY() / Screen.scale);
-                //y = (e.getY() / Screen.scale) * -1;
                 if (linemovement.isSelected()){
                     placeline(x,y,field,e);
                 }else{
@@ -208,7 +207,6 @@ public class Main {
     }
 
 
-
     public static void programmupdate(JTextField posx_val,JTextField posy_val, JTextField velx_val,JTextField vely_val, JTextField windx_val,JTextField windy_val,  Screen field) {
 
         double positionX = Double.parseDouble(posx_val.getText());
@@ -241,59 +239,65 @@ public class Main {
 
     public static void programmreset(Screen field, JButton start, JButton update,JTextField posx_val,JTextField posy_val, JTextField velx_val,JTextField vely_val, JTextField windx_val,JTextField windy_val){
 
-
+        //Kugeln resetten
         for (int i = 0; i < Screen.ball.length; i++){
 
-            for(int j = 0; j <= Screen.startvalues.length; j++) {
+            for(int j = 0; j <= startvalues.length; j++) {
 
                 switch (j){
                     case 0 :
-                        Screen.ball[i].setPosX(Screen.startvalues[i][j]);
+                        Screen.ball[i].setPosX(startvalues[i][j]);
                         break;
                     case 1 :
-                        Screen.ball[i].setPosY(Screen.startvalues[i][j]);
+                        Screen.ball[i].setPosY(startvalues[i][j]);
                         break;
                     case 2 :
-                        Screen.ball[i].setVelX(Screen.startvalues[i][j]);
+                        Screen.ball[i].setVelX(startvalues[i][j]);
                         break;
                     case 3 :
-                        Screen.ball[i].setVelY(Screen.startvalues[i][j]);
+                        Screen.ball[i].setVelY(startvalues[i][j]);
                         break;
                     case 4 :
-                        Screen.ball[i].setWeight(Screen.startvalues[i][j]);
+                        Screen.ball[i].setWeight(startvalues[i][j]);
                         break;
                 }
-              //  programmpause(field, start, update);
-            //    programmupdate(posx_val,posy_val,velx_val, vely_val,windx_val, windy_val, field);
-
             }
 
         }
+
+        for(int i = 0; i < Screen.ball.length; i++) {
+            Screen.ball[i].setRollen(false);
+        }
+
         Screen.ball[2] = resetMagnet1();
         Screen.ball[3] = resetMagnet2();
 
+        posx_val.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getPosX()));
+        posy_val.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getPosY()));
+
+        velx_val.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getVelX()));
+        vely_val.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getVelY()));
+
+        //Linien resetten
+
         for (int i = 0; i < Screen.lines.length; i++) {
 
-            for (int j = 0; j <= Screen.startvaluesline.length; j++) {
+            for (int j = 0; j <= startvaluesline.length; j++) {
 
                 switch (j) {
                     case 0:
-                        Screen.lines[i].setX0(Screen.startvaluesline[i][j]);
-                        System.out.println(Screen.startvaluesline[i][j]);
+                        Screen.lines[i].setX0(startvaluesline[i][j]);
                         break;
                     case 1:
-                        Screen.lines[i].setY0(Screen.startvaluesline[i][j]);
-                        System.out.println(Screen.startvaluesline[i][j]);
+                        Screen.lines[i].setY0(startvaluesline[i][j]);
                         break;
 
                     case 2:
-                        Screen.lines[i].setX1(Screen.startvaluesline[i][j]);
-                        System.out.println(Screen.startvaluesline[i][j]);
+                        Screen.lines[i].setX1(startvaluesline[i][j]);
                         break;
 
                     case 3:
-                        Screen.lines[i].setY1(Screen.startvaluesline[i][j]);
-                        System.out.println(Screen.startvaluesline[i][j]);
+                        Screen.lines[i].setY1(startvaluesline[i][j]);
                         break;
                 }
             }
@@ -302,19 +306,8 @@ public class Main {
         Controller.wind[0] = 0;
         Controller.wind[1] = 0;
 
-        Controller.gravity[0] = 0;
-        Controller.gravity[1] = 9.81;
-
-        posx_val.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getPosX()));
-        posy_val.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getPosY()));
-
-        velx_val.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getVelX()));
-        vely_val.setText(Double.toString(Screen.ball[ballchoice.getSelectedIndex()].getVelY()));
-
         windx_val.setText(Double.toString(Controller.wind[0]));
         windy_val.setText(Double.toString(Controller.wind[1]));
-
-        //.setText("62");
 
         field.repaint();
     }
@@ -336,20 +329,19 @@ public class Main {
 
     public static void placeline(int posx_val, int posy_val, Screen field, MouseEvent e) {
 
-        if(e.getButton() == MouseEvent.BUTTON1){
-            if(posx_val > Screen.lines[linechoice.getSelectedIndex()].getX1()) {
-                Screen.lines[linechoice.getSelectedIndex()].setP1(Screen.lines[linechoice.getSelectedIndex()].getX1(), posy_val);
-            }
-            else{
-                Screen.lines[linechoice.getSelectedIndex()].setP1(posx_val, posy_val);
-            }
-        }else if(e.getButton() == MouseEvent.BUTTON3){
-            if(posx_val < Screen.lines[linechoice.getSelectedIndex()].getX0()) {
-                Screen.lines[linechoice.getSelectedIndex()].setP2(Screen.lines[linechoice.getSelectedIndex()].getX0(), posy_val);
-            }
-            else{
-                Screen.lines[linechoice.getSelectedIndex()].setP2(posx_val, posy_val);
-            }
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                if (posx_val > Screen.lines[linechoice.getSelectedIndex()+1].getX1()) {
+                    Screen.lines[linechoice.getSelectedIndex()+1].setP1(Screen.lines[linechoice.getSelectedIndex()+1].getX1(), posy_val);
+                } else {
+                    Screen.lines[linechoice.getSelectedIndex()+1].setP1(posx_val, posy_val);
+                }
+            } else if (e.getButton() == MouseEvent.BUTTON3) {
+                if (posx_val < Screen.lines[linechoice.getSelectedIndex()+1].getX0()) {
+                    Screen.lines[linechoice.getSelectedIndex()+1].setP2(Screen.lines[linechoice.getSelectedIndex()+1].getX0(), posy_val);
+                } else {
+                    Screen.lines[linechoice.getSelectedIndex()+1].setP2(posx_val, posy_val);
+                }
+
         }
         field.repaint();
     }
@@ -359,13 +351,13 @@ public class Main {
         //aktuelle Koordinaten als int
         int pos_x = (int)Screen.ball[ballchoice.getSelectedIndex()].getPosX();
         int pos_y = newY((int)Screen.ball[ballchoice.getSelectedIndex()].getPosY());
-        currentCoordinate.setText("Current Coordinate: [" + pos_x + ", " + pos_y + "]");
+        currentCoordinate.setText("Kugel Position: [" + pos_x + ", " + pos_y + "]");
     }
 
     public static Line[] defaultLineSettings(){
         Line[] lines ={
-                new Line(5,8,35,22),
                 new Line(35,25,65,35),
+                new Line(5,8,35,22),
                 new Line(0, 7,5,45),
                 new Line(10, 45,30,30),
                 new Line(6, 50,40,60),
@@ -379,13 +371,33 @@ public class Main {
 
     public static Marble[] defaultBallSettings(){
         Marble ball[] = {
-                new Marble(26, 59, 0, 0, 1.7, true, false),
-                new Marble(22, 11.5, 0, 0, 1.7, true, false),
+                new Marble(23, 60, 0, 0, 1.7, true, false),
+                new Marble(25, 59, 0, 0, 1.7, true, false),
                 resetMagnet1(),
                 resetMagnet2()
         };
         return ball;
     }
+
+    static double[][] startvalues = {
+
+            {23, newY(60), 0, 0, 1.7},
+            {25, newY(59), 0, 0, 1.7},
+            {54, newY(44.2), 0, 0, 2},
+            {58, newY(42.9), 0, 0, 2}
+    };
+
+    static int[][] startvaluesline = {
+            {35, 25, 65, 35},
+            {5,8,35,22},
+            {0, 7, 5, 45},
+            {10, 45, 30, 30},
+            {6, 50, 40, 60},
+            {40, 65, 75, 45},
+            {0, 72, 70, 72},
+            {0, 51, 0, 72}
+
+    };
 
     public static Marble resetMagnet1(){
         return new Marble(54, 44.2, 0, 0, 2, false, true);

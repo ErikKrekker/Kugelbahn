@@ -14,25 +14,26 @@ public class Controller {
     static double a_magnet1, a_magnet2;                 //Beschleunigungen der beiden Magneten
 
     //Variablen - Kollisionserkennung
-    static int closest;                                 //Linie, die am nah zur Marble ist -> beim Handling genutzt
-    static double dotP;                                 //Skalarprodukt von (Marble zu Linie & Normalenvektor der Geraden) -> schaut ob Marble ober oder unter der Linie liegt
+    static int closest;                                 //Linie, die am nah zur Kugel ist -> beim Handling genutzt
+    static double dotP;                                 //Skalarprodukt von (Kugel zu Linie & Normalenvektor der Geraden) -> schaut ob Kugel ober oder unter der Linie liegt
     static double normX, normY;                         //Normalenvektor der Geraden (zeigt immer noch oben)
     static double normalizeNorm;                        //Normalisierung des Normalenvektors
-    static double richtungX, richtungY;                 //Richtungsvektor von Marble zur Geraden
+    static double richtungX, richtungY;                 //Richtungsvektor von Kugel zur Geraden
     static double d_balls;                              //Abstand von 2 Kugeln zueinander
     static double d = Double.POSITIVE_INFINITY;         //Abstand zur aktuell betrachteten Linie
 
     //Variablen - Kollisionshandling
-    static double skalar;                               //Skalar zur Projektion des Richtungsvektor der Marble auf die Gerade
-    static double vProjektionX, vProjektionY;           //Projektion vom Richtungsvektor der Marble auf Gerade
+    static double skalar;                               //Skalar zur Projektion des Richtungsvektor der Kugel auf die Gerade
+    static double vProjektionX, vProjektionY;           //Projektion vom Richtungsvektor der Kugel auf Gerade
     static double normalizeProjektion;                  //Normalisierung des Projektionsvektor
     static double tempvParallelX, tempvParallelY;       //Paralleler Anteil (zum Normalenvektor) der Projektion
     static double x_line, y_line;                       //Verbindungsvektor der beiden Magnetkugeln
 
     //Variablen - Einstellbar
-    static double heightLoss = 0.38;                    //Verlust beim Aufprall -> Marble fliegt auch Holzplatte -> http://docplayer.org/72996896-Die-hyperaktive-kugel-wann-hoert-sie-endlich-auf-zu-springen.html
-    static double detectionThreshold = 0.6;             //"Buffer" zur Abstandserkennung Marble mit Linie
+    static double heightLoss = 0.38;                    //Verlust beim Aufprall -> Kugel fliegt auch Holzplatte -> http://docplayer.org/72996896-Die-hyperaktive-kugel-wann-hoert-sie-endlich-auf-zu-springen.html
+    static double detectionThreshold = 0.6;             //"Buffer" zur Abstandserkennung Kugel mit Linie
     static double buffer = 0.25;                        //"Buffer" der Grenzen der Linie (wichitg bei senkrechten Linien)
+
 
 
     //Ablauf der Kugelbahn
@@ -84,7 +85,7 @@ public class Controller {
 
             ay = gravity[1] + wind[1];
 
-          //Beschleunigung Marble rollt auf Linie inkl. Reibung ohne Wind
+          //Beschleunigung Kugel rollt auf Linie inkl. Reibung ohne Wind
         } else if (Screen.ball[ballID].isRollen() && Screen.ball[ballID].isMovable() && !Screen.ball[ballID].isMagnet()) {
             double m = ((double) Screen.lines[Screen.ball[ballID].getRollOn()].getY1() - (double) Screen.lines[Screen.ball[ballID].getRollOn()].getY0()) / ((double) Screen.lines[Screen.ball[ballID].getRollOn()].getX1() - (double) Screen.lines[Screen.ball[ballID].getRollOn()].getX0());
 
@@ -134,7 +135,7 @@ public class Controller {
                 ay = ahy - ary;
             }
 
-            //Marble trifft senkrecht auf Linie
+            //Kugel trifft senkrecht auf Linie
             else if (m == 0 && Screen.ball[ballID].getVelX_new() == 0) {
                 ax = ahx + arx;
 
@@ -178,7 +179,7 @@ public class Controller {
         Main.updateCoordinate();
     }
 
-    //Collision Handler Marble mit Linie
+    //Collision Handler Kugel mit Linie
     public static void collisionCheckPointLine(int lineID, int ballID) {
 
         calcDistancePointLine(lineID, ballID);
@@ -195,21 +196,21 @@ public class Controller {
             m = ((double) Screen.lines[closest].getY1() - (double) Screen.lines[closest].getY0()) / ((double) Screen.lines[closest].getX1() - (double) Screen.lines[closest].getX0());
         }
 
-        //Marble trifft von der linken Seite aus auf eine senkrechte Linie
+        //Kugel trifft von der linken Seite aus auf eine senkrechte Linie
         if (m == Double.POSITIVE_INFINITY && dotP > 0 && !Screen.ball[ballID].isCollision() && !Screen.ball[ballID].isRollen() && d <= 0.6 && hitbox(lineID, ballID, m)) {
 
             Screen.ball[ballID].setVelX_new(-1 * (Screen.ball[ballID].getVelX_new() * heightLoss));
             Screen.ball[ballID].setVelY_new(Screen.ball[ballID].getVelY_new() * heightLoss);
         }
 
-        //Marble trifft von der rechten Seite aus auf eine senkrechte Linie
+        //Kugel trifft von der rechten Seite aus auf eine senkrechte Linie
         else if (m == Double.POSITIVE_INFINITY && dotP < 0 && Screen.ball[ballID].isCollision() && !Screen.ball[ballID].isRollen() && d <= 0.6 && hitbox(lineID, ballID, m)) {
 
             Screen.ball[ballID].setVelX_new(-1 * (Screen.ball[ballID].getVelX_new() * heightLoss));
             Screen.ball[ballID].setVelY_new(Screen.ball[ballID].getVelY_new() * heightLoss);
         }
 
-        //Marble trifft von oben auf die Linie, Normalenvektor der geraden & Richtungsvektor der Marble gehen aufeinander zu, Marble befindet sich zwischen Start & Endpunkt der Geraden
+        //Kugel trifft von oben auf die Linie, Normalenvektor der geraden & Richtungsvektor der Kugel gehen aufeinander zu, Kugel befindet sich zwischen Start & Endpunkt der Geraden
         else if (!Screen.ball[ballID].isRollen() && dotP < 0 && Screen.ball[ballID].isCollision() && d <= detectionThreshold && hitbox(closest, ballID, m)) {
             vectorZerlegungPointLine(closest, ballID);
 
@@ -222,12 +223,12 @@ public class Controller {
             }
         }
 
-        //Marble trifft von unten auf die Linie
+        //Kugel trifft von unten auf die Linie
         else if (dotP > 0 && !Screen.ball[ballID].isCollision() && d <= detectionThreshold && hitbox(closest, ballID, m)) {
             calcReflectingVector(closest, ballID);
         }
 
-        //Beim Rollen wird geschaut, ob die Marble auf eine andere Linie trifft
+        //Beim Rollen wird geschaut, ob die Kugel auf eine andere Linie trifft
         //Rollen wird kurzzeitig auf false gesetzt, damit der Collisioncheck wieder durchgeschaut werden kann
         else if (Screen.ball[ballID].isRollen() && lineID != Screen.ball[ballID].getRollOn() && d <= detectionThreshold && dotP < 0 && hitbox(closest, ballID, m)) {
             Screen.ball[ballID].setRollen(false);
@@ -238,18 +239,18 @@ public class Controller {
 
         }
 
-        //Schaut, ob die Marble noch am Rollen ist (entweder nicht auf der Linie oder ist zu weit weg)
+        //Schaut, ob die Kugel noch am Rollen ist (entweder nicht auf der Linie oder ist zu weit weg)
         else if (Screen.ball[ballID].isRollen() && ((Screen.ball[ballID].getPosX() < Screen.lines[Screen.ball[ballID].getRollOn()].getX0()) ||Screen.ball[ballID].getPosX() > Screen.lines[Screen.ball[ballID].getRollOn()].getX1())) {
             Screen.ball[ballID].setRollen(false);
         }
     }
 
-    //Kollisionserkennung Marble mit Linie
+    //Kollisionserkennung Kugel mit Linie
     //Gerade in Normalenform
-    // d = Marble->Gerade * normVektor der Geraden
+    // d = Kugel->Gerade * normVektor der Geraden
     public static void calcDistancePointLine(int lineID, int ballID) {
 
-        //Vektor zwischen Marble zur Geraden (auf den Startpunkt)
+        //Vektor zwischen Kugel zur Geraden (auf den Startpunkt)
         richtungX = Screen.lines[lineID].getX0() - Screen.ball[ballID].getPosX_new();
         richtungY = Screen.lines[lineID].getY0() - Screen.ball[ballID].getPosY_new();
 
@@ -263,7 +264,7 @@ public class Controller {
 
         d = Math.abs(richtungX * normX + richtungY * normY) / Math.sqrt(Math.pow(normX, 2) + Math.pow(normY, 2)) - Screen.radius / Screen.scale;
 
-        //Schaut ob eine Marble nah genug and einer Linie ist, diese Nummer wird gespeichert und im collisionChecker abgefragt
+        //Schaut ob eine Kugel nah genug and einer Linie ist, diese Nummer wird gespeichert und im collisionChecker abgefragt
         if (d < 1) {
             closest = lineID;
         }
@@ -288,11 +289,11 @@ public class Controller {
         return inRange;
     }
 
-    //Schaut ob Richtungsvektor der Marble & Normale der Linie aufeinader zu laufen
+    //Schaut ob Richtungsvektor der Kugel & Normale der Linie aufeinader zu laufen
     public static void checkDirectionPointLine(int ballID) {
         double dotP;
 
-        //Relative Geschwindigkeit der Marble zur Linie
+        //Relative Geschwindigkeit der Kugel zur Linie
         double vrelX = Screen.ball[ballID].getVelX_new() - 0;
         double vrelY = Screen.ball[ballID].getVelY_new() - 0;
 
@@ -304,14 +305,14 @@ public class Controller {
             Screen.ball[ballID].setCollision(false);
     }
 
-    //Kollisionshandling Marble mit Linie
+    //Kollisionshandling Kugel mit Linie
     //skalar = v * rvGerade / |rvGerade|
     public static void vectorZerlegungPointLine(int lineID, int ballID) {
 
         skalar = (Screen.ball[ballID].getVelX_new() * (Screen.lines[lineID].getX1() - Screen.lines[lineID].getX0()) + Screen.ball[ballID].getVelY_new() * (Screen.lines[lineID].getY1() - Screen.lines[lineID].getY0())) /
                (Math.pow((Screen.lines[lineID].getX1() - Screen.lines[lineID].getX0()), 2) + Math.pow((Screen.lines[lineID].getY1() - Screen.lines[lineID].getY0()), 2));
 
-        //Projektion des Richtungsvektors der Marble auf die Gerade
+        //Projektion des Richtungsvektors der Kugel auf die Gerade
         vProjektionX = skalar * (Screen.lines[lineID].getX1() - Screen.lines[lineID].getX0());
         vProjektionY = skalar * (Screen.lines[lineID].getY1() - Screen.lines[lineID].getY0());
         Screen.ball[ballID].setvProjektionX(vProjektionX);
@@ -350,7 +351,7 @@ public class Controller {
     // skalar = v * rvGerade / |rvGerade|
     // v_neu = -v + (2*skalar*rvGerade)
     public static void calcReflectingVector(int lineID, int ballID) {
-        //Faktor für die Projektion des Richtungsvektor der Marble auf die Linie
+        //Faktor für die Projektion des Richtungsvektor der Kugel auf die Linie
         double k = (Screen.ball[ballID].getVelX_new() * (Screen.lines[lineID].getX1() - Screen.lines[lineID].getX0()) + Screen.ball[ballID].getVelY_new() * (Screen.lines[lineID].getY1() - Screen.lines[lineID].getY0()))
                 / (Math.pow(Screen.lines[lineID].getX1() - Screen.lines[lineID].getX0(), 2) + Math.pow(Screen.lines[lineID].getY1() - Screen.lines[lineID].getY0(), 2));
 
@@ -358,107 +359,109 @@ public class Controller {
         Screen.ball[ballID].setVelY_new(heightLoss * (-Screen.ball[ballID].getVelY_new() + (2 * k * (Screen.lines[lineID].getY1() - Screen.lines[lineID].getY0()))));
     }
 
-    //Marble rollt immer genau auf der Linie
+    //Kugel rollt immer genau auf der Linie
     public static void fixClipping(int rollOn, int ballID) {
         double fix;
         //Steigung
         double m = ((double) Screen.lines[rollOn].getY1() - (double) Screen.lines[rollOn].getY0()) / ((double) Screen.lines[rollOn].getX1() - (double) Screen.lines[rollOn].getX0());
         calcDistancePointLine(rollOn, ballID);
-        //Unterschiedliche Szenarios, wie die Marble neu positiniert werden muss
+        //Unterschiedliche Szenarios, wie die Kugel neu positiniert werden muss
+        if(Screen.ball[ballID].isRollen()) {
+            //Wenn die Kugel oberhalb der Linie liegt
+            if (dotP < 0 && m > 0 && d < 0.5) {
+                calcDistancePointLine(rollOn, ballID);
+                fix = Math.abs(d - 0.5);
+                Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() + (fix * Math.abs((normX / normalizeNorm))));
+                Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
+                updateVelocityPosition(ballID);
+            } else if (dotP < 0 && m < 0 && d < 0.5) {
+                calcDistancePointLine(rollOn, ballID);
+                fix = Math.abs(d - 0.5);
+                Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() - (fix * Math.abs((normX / normalizeNorm))));
+                Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
+                updateVelocityPosition(ballID);
+            } else if (dotP < 0 && m > 0 && d > 0.5) {
+                calcDistancePointLine(rollOn, ballID);
+                fix = Math.abs(d - 0.5);
+                Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() - (fix * Math.abs((normX / normalizeNorm))));
+                Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
+                updateVelocityPosition(ballID);
+            } else if (dotP < 0 && m < 0 && d > 0.5) {
+                calcDistancePointLine(rollOn, ballID);
+                fix = Math.abs(d - 0.5);
+                Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() + (fix * Math.abs((normX / normalizeNorm))));
+                Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
+                updateVelocityPosition(ballID);
+            } else if (dotP < 0 && m == 0 && d > 0.5) {
+                calcDistancePointLine(rollOn, ballID);
+                fix = Math.abs(d - 0.5);
+                Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
+                updateVelocityPosition(ballID);
+                calcDistancePointLine(rollOn, ballID);
+            } else if (dotP < 0 && m == 0 && d < 0.5) {
+                calcDistancePointLine(rollOn, ballID);
+                fix = Math.abs(d - 0.5);
+                Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
+                updateVelocityPosition(ballID);
+            }
 
-        //Wenn die Kugel oberhalb der Linie liegt
-        if (dotP < 0 && m > 0 && d < 0.5) {
-            calcDistancePointLine(rollOn, ballID);
-            fix = Math.abs(d - 0.5);
-            Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() + (fix * Math.abs((normX / normalizeNorm))));
-            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
-            updateVelocityPosition(ballID);
-        } else if (dotP < 0 && m < 0 && d < 0.5) {
-            calcDistancePointLine(rollOn, ballID);
-            fix = Math.abs(d - 0.5);
-            Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() - (fix * Math.abs((normX / normalizeNorm))));
-            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
-            updateVelocityPosition(ballID);
-        } else if (dotP < 0 && m > 0 && d > 0.5) {
-            calcDistancePointLine(rollOn, ballID);
-            fix = Math.abs(d - 0.5);
-            Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() - (fix * Math.abs((normX / normalizeNorm))));
-            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
-            updateVelocityPosition(ballID);
-        } else if (dotP < 0 && m < 0 && d > 0.5) {
-            calcDistancePointLine(rollOn, ballID);
-            fix = Math.abs(d - 0.5);
-            Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() + (fix * Math.abs((normX / normalizeNorm))));
-            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
-            updateVelocityPosition(ballID);
-        } else if (dotP < 0 && m == 0 && d > 0.5 ) {
-            calcDistancePointLine(rollOn, ballID);
-            fix = Math.abs(d - 0.5);
-            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
-            updateVelocityPosition(ballID);
-            calcDistancePointLine(rollOn, ballID);
-        } else if (dotP < 0 && m == 0 && d < 0.5) {
-            calcDistancePointLine(rollOn, ballID);
-            fix = Math.abs(d - 0.5);
-            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
-            updateVelocityPosition(ballID);
-        }
 
-
-        //Wenn die Kugel unerhalb der Linie liegt
-        if (dotP > 0 && m > 0 && d < 0.5) {
-            calcDistancePointLine(rollOn, ballID);
-            fix = Math.abs(d - 0.5);
-            Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() - (fix * Math.abs((normX / normalizeNorm))));
-            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
-            updateVelocityPosition(ballID);
-        } else if (dotP > 0 && m < 0 && d < 0.5) {
-            calcDistancePointLine(rollOn, ballID);
-            fix = Math.abs(d - 0.5);
-            Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() + (fix * Math.abs((normX / normalizeNorm))));
-            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
-            updateVelocityPosition(ballID);
-        } else if (dotP > 0 && m > 0 && d > 0.5) {
-            calcDistancePointLine(rollOn, ballID);
-            fix = Math.abs(d - 0.5);
-            Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() + (fix * Math.abs((normX / normalizeNorm))));
-            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
-            updateVelocityPosition(ballID);
-        } else if (dotP > 0 && m < 0 && d > 0.5) {
-            calcDistancePointLine(rollOn, ballID);
-            fix = Math.abs(d - 0.5);
-            Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() - (fix * Math.abs((normX / normalizeNorm))));
-            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
-            updateVelocityPosition(ballID);
-        } else if (dotP > 0 && m == 0 && d > 0.5 ) {
-            calcDistancePointLine(rollOn, ballID);
-            fix = Math.abs(d - 0.5);
-            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
-            updateVelocityPosition(ballID);
-            calcDistancePointLine(rollOn, ballID);
-        } else if (dotP > 0 && m == 0 && d < 0.5) {
-            calcDistancePointLine(rollOn, ballID);
-            fix = Math.abs(d - 0.5);
-            Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
-            updateVelocityPosition(ballID);
+            //Wenn die Kugel unerhalb der Linie liegt
+            if (dotP > 0 && m > 0 && d < 0.5) {
+                calcDistancePointLine(rollOn, ballID);
+                fix = Math.abs(d - 0.5);
+                Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() - (fix * Math.abs((normX / normalizeNorm))));
+                Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
+                updateVelocityPosition(ballID);
+            } else if (dotP > 0 && m < 0 && d < 0.5) {
+                calcDistancePointLine(rollOn, ballID);
+                fix = Math.abs(d - 0.5);
+                Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() + (fix * Math.abs((normX / normalizeNorm))));
+                Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
+                updateVelocityPosition(ballID);
+            } else if (dotP > 0 && m > 0 && d > 0.5) {
+                calcDistancePointLine(rollOn, ballID);
+                fix = Math.abs(d - 0.5);
+                Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() + (fix * Math.abs((normX / normalizeNorm))));
+                Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
+                updateVelocityPosition(ballID);
+            } else if (dotP > 0 && m < 0 && d > 0.5) {
+                calcDistancePointLine(rollOn, ballID);
+                fix = Math.abs(d - 0.5);
+                Screen.ball[ballID].setPosX_new(Screen.ball[ballID].getPosX_new() - (fix * Math.abs((normX / normalizeNorm))));
+                Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
+                updateVelocityPosition(ballID);
+            } else if (dotP > 0 && m == 0 && d > 0.5) {
+                calcDistancePointLine(rollOn, ballID);
+                fix = Math.abs(d - 0.5);
+                Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() - (fix * Math.abs((normY / normalizeNorm))));
+                updateVelocityPosition(ballID);
+                calcDistancePointLine(rollOn, ballID);
+            } else if (dotP > 0 && m == 0 && d < 0.5) {
+                calcDistancePointLine(rollOn, ballID);
+                fix = Math.abs(d - 0.5);
+                Screen.ball[ballID].setPosY_new(Screen.ball[ballID].getPosY_new() + (fix * Math.abs((normY / normalizeNorm))));
+                updateVelocityPosition(ballID);
+            }
         }
 
     }
 
-    //Collision Handler Marble mit Marble
-
+    //Collision Handler Kugel mit Kugel
     public static void collisionCheckPointPoint(int ball_a, int ball_b) {
 
         calcDistancePointPoint(ball_a, ball_b);
         vectorZerlegungPointPoint(ball_a, ball_b);
 
-        //Marble befinden sich genau nebeneinander oder ineinander
+        //Kugel befinden sich genau nebeneinander oder ineinander
         if (d_balls <= (Screen.diameter / Screen.scale)) {
 
             //aktiviert die Magnete
             if (Screen.ball[ball_a].isMagnet() && !Screen.ball[ball_a].isMovable() || Screen.ball[ball_b].isMagnet() && !Screen.ball[ball_b].isMovable()) {
                 Screen.ball[2].setMovable(true);
                 Screen.ball[3].setMovable(true);
+                Screen.ball[2].setRollOn(0);
+                Screen.ball[3].setRollOn(0);
 
 
                 Screen.ball[2].setPosX_new(Screen.ball[2].getPosX());
@@ -468,8 +471,8 @@ public class Controller {
             }
 
             if (Screen.ball[ball_a].isMagnet() && Screen.ball[ball_b].isMagnet()) {
-                fixClipping(1, 2);
-                fixClipping(1, 3);
+                fixClipping(0, 2);
+                fixClipping(0, 3);
                 //deaktiviert Magnete nach dem Zusammenstoss
                 if (Screen.ball[2].getPosX() < 53 || Screen.ball[3].getPosX() < 53 ) {
 
@@ -502,7 +505,7 @@ public class Controller {
                 double normLine = vectorLength(x_line, y_line);
                 double offset = Math.abs(d_balls - Screen.diameter / Screen.scale);
 
-                //Versetzt die Kugeln entlangt der Beruehrnormalen so, dass diese nicht ineinander liegen & knapp aus der Kollisionserkennung liegt (die linkere Marble wird ermittelt und versetz)
+                //Versetzt die Kugeln entlangt der Beruehrnormalen so, dass diese nicht ineinander liegen & knapp aus der Kollisionserkennung liegt (die linkere Kugel wird ermittelt und versetz)
                 if(d_balls <= Screen.diameter / Screen.scale) {
                     if (Screen.ball[ball_a].getPosX_new() < Screen.ball[ball_b].getPosX_new()) {
                         Screen.ball[ball_a].setPosX_new(Screen.ball[ball_a].getPosX_new() - (offset * Math.abs((x_line / normLine))) - 0.01);
@@ -515,11 +518,8 @@ public class Controller {
             updateVelocityPosition(ball_a);
             updateVelocityPosition(ball_b);
 
-            //Kollisionscheck, damit die Marble nicht durch die Linien fliegen
+            //Kollisionscheck, damit die Kugel nicht durch die Linien fliegen
             for (int j = 0; j < Screen.lines.length; j++) {
-                //Screen.ball[ball_a].setRollen(false);
-                //Screen.ball[ball_b].setRollen(false);
-
                 collisionCheckPointLine(j, ball_a);
                 collisionCheckPointLine(j, ball_b);
             }
@@ -527,16 +527,16 @@ public class Controller {
     }
 
 
-    //Kollisionserkennung Marble mit Marble
+    //Kollisionserkennung Kugel mit Kugel
 
     public static void calcDistancePointPoint(int ball_a, int ball_b) {
         d_balls = Math.sqrt(Math.pow(Screen.ball[ball_b].getPosX() - Screen.ball[ball_a].getPosX(), 2) + Math.pow(Screen.ball[ball_b].getPosY() - Screen.ball[ball_a].getPosY(), 2));
     }
 
-    //Kollisionshandling Marble mit Marble
+    //Kollisionshandling Kugel mit Kugel
     //skalar = v * rvBeruernormale / |Beruehrnromale|
     public static void vectorZerlegungPointPoint(int ball_a, int ball_b) {
-        //Vektor zerlegung Marble 1 mit Linie, die die beiden Kugeln verbindet
+        //Vektor zerlegung Kugel 1 mit Linie, die die beiden Kugeln verbindet
         x_line = Screen.ball[ball_a].getPosX() - Screen.ball[ball_b].getPosX();
         y_line = Screen.ball[ball_a].getPosY() - Screen.ball[ball_b].getPosY();
         double skalar1 = (Screen.ball[ball_a].getVelX_new() * x_line + Screen.ball[ball_a].getVelY_new() * y_line) / (Math.pow(x_line, 2) + Math.pow(y_line, 2));
@@ -547,7 +547,7 @@ public class Controller {
         //double parallelA_x = Screen.ball[ball_a].getVelX_new() - projA_x;
         //double parallelA_y = Screen.ball[ball_a].getVelY_new() - projA_y;
 
-        //Vektor Zerlegung Marble 2
+        //Vektor Zerlegung Kugel 2
         x_line = Screen.ball[ball_b].getPosX() - Screen.ball[ball_a].getPosX();
         y_line = Screen.ball[ball_b].getPosY() - Screen.ball[ball_a].getPosY();
         double skalar2 = (Screen.ball[ball_b].getVelX_new() * x_line + Screen.ball[ball_b].getVelY_new() * y_line) / (Math.pow(x_line, 2) + Math.pow(y_line, 2));
@@ -589,12 +589,26 @@ public class Controller {
 
         double vy2_new = 2 * (Screen.ball[ball_a].getWeight() * Screen.ball[ball_a].getVelY_new() + Screen.ball[ball_b].getWeight() * Screen.ball[ball_b].getVelY_new()) / mass - Screen.ball[ball_b].getVelY_new();
 
+
         Screen.ball[ball_a].setVelX_new(vx1_new);
         Screen.ball[ball_a].setVelY_new(vy1_new);
-        updateVelocityPosition(ball_a);
+
+
 
         Screen.ball[ball_b].setVelX_new(vx2_new);
         Screen.ball[ball_b].setVelY_new(vy2_new);
+
+        Screen.ball[ball_a].setRollen(false);
+        Screen.ball[ball_b].setRollen(false);
+        //Kugel muss nicht am rollen sein beim Zusammmsentreffen -> Rollen wird auf false gesetzt, beim Check wird dann geschaut ob die Kugel wieder rollen kann
+        for (int j = 0; j < Screen.lines.length; j++) {
+            collisionCheckPointLine(j, ball_b);
+            collisionCheckPointLine(j, ball_a);
+        }
+        fixClipping(Screen.ball[ball_a].getRollOn(), ball_a);
+        updateVelocityPosition(ball_a);
+
+        fixClipping(Screen.ball[ball_b].getRollOn(), ball_b);
         updateVelocityPosition(ball_b);
     }
 
@@ -607,9 +621,11 @@ public class Controller {
         double vx = (Screen.ball[ball_a].getWeight() * Screen.ball[ball_a].getVelX_new() + Screen.ball[ball_b].getWeight() * Screen.ball[ball_b].getVelX_new()) / mass;
         double vy = (Screen.ball[ball_a].getWeight() * Screen.ball[ball_a].getVelY_new() + Screen.ball[ball_b].getWeight() * Screen.ball[ball_b].getVelY_new()) / mass;
 
+
         Screen.ball[ball_a].setVelX_new(vx);
         Screen.ball[ball_a].setVelY_new(vy);
         updateVelocityPosition(ball_a);
+
 
         Screen.ball[ball_b].setVelX_new(vx);
         Screen.ball[ball_b].setVelY_new(vy);

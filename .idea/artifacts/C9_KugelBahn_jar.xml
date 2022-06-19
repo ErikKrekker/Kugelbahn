@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="C9_KugelBahn:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/C9_KugelBahn_jar</output-path>
+    <root id="archive" name="C9_KugelBahn.jar">
+      <element id="module-output" name="C9_KugelBahn" />
+    </root>
+  </artifact>
+</component>
