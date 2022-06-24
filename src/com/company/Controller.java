@@ -451,11 +451,12 @@ public class Controller {
     public static void collisionCheckPointPoint(int ball_a, int ball_b) {
 
         calcDistancePointPoint(ball_a, ball_b);
-        vectorZerlegungPointPoint(ball_a, ball_b);
+        checkDirectionPointPoint(ball_a,ball_b);
 
         //Kugel befinden sich genau nebeneinander oder ineinander
-        if (d_balls <= (Screen.diameter / Screen.scale)) {
-
+        if (d_balls <= (Screen.diameter / Screen.scale) && kollision) {
+            vectorZerlegungPointPoint(ball_a, ball_b);
+            System.out.println("BOINKKK");
             //aktiviert die Magnete
             if (Screen.ball[ball_a].isMagnet() && !Screen.ball[ball_a].isMovable() || Screen.ball[ball_b].isMagnet() && !Screen.ball[ball_b].isMovable()) {
                 Screen.ball[2].setMovable(true);
@@ -532,29 +533,53 @@ public class Controller {
     public static void calcDistancePointPoint(int ball_a, int ball_b) {
         d_balls = Math.sqrt(Math.pow(Screen.ball[ball_b].getPosX() - Screen.ball[ball_a].getPosX(), 2) + Math.pow(Screen.ball[ball_b].getPosY() - Screen.ball[ball_a].getPosY(), 2));
     }
+    static double vrex, vrey, vrNorm, normm;
+    static boolean kollision = false;
+    public static void checkDirectionPointPoint(int ball_a, int ball_b){
+        vrex = Screen.ball[ball_a].getVelX() - Screen.ball[ball_b].getVelX();
+        vrey = Screen.ball[ball_a].getVelY() - Screen.ball[ball_b].getVelY();
+
+        vrNorm = vectorLength(vrex, vrey);
+        //Vektor zerlegung Kugel 1 mit Linie, die die beiden Kugeln verbindet
+        x_line = Screen.ball[ball_a].getPosX() - Screen.ball[ball_b].getPosX();
+        y_line = Screen.ball[ball_a].getPosY() - Screen.ball[ball_b].getPosY();
+
+        normm = vectorLength(x_line, y_line);
+
+        double dotP = (vrex/vrNorm) * (x_line/normm) + (vrey/vrNorm) * (y_line/normm);
+
+        if(dotP < 0){
+            kollision = true;
+        }
+        else{
+            kollision = false;
+        }
+    }
 
     //Kollisionshandling Kugel mit Kugel
     //skalar = v * rvBeruernormale / |Beruehrnromale|
     public static void vectorZerlegungPointPoint(int ball_a, int ball_b) {
-        //Vektor zerlegung Kugel 1 mit Linie, die die beiden Kugeln verbindet
         x_line = Screen.ball[ball_a].getPosX() - Screen.ball[ball_b].getPosX();
         y_line = Screen.ball[ball_a].getPosY() - Screen.ball[ball_b].getPosY();
         double skalar1 = (Screen.ball[ball_a].getVelX_new() * x_line + Screen.ball[ball_a].getVelY_new() * y_line) / (Math.pow(x_line, 2) + Math.pow(y_line, 2));
         double projA_x = skalar1 * x_line;
         double projA_y = skalar1 * y_line;
+        Screen.ball[ball_a].setVelX_new(projA_x);
+        Screen.ball[ball_a].setVelY_new(projA_y);
 
-        double a = projA_x * x_line + projA_y * y_line;
-        //double parallelA_x = Screen.ball[ball_a].getVelX_new() - projA_x;
-        //double parallelA_y = Screen.ball[ball_a].getVelY_new() - projA_y;
-
-        //Vektor Zerlegung Kugel 2
         x_line = Screen.ball[ball_b].getPosX() - Screen.ball[ball_a].getPosX();
         y_line = Screen.ball[ball_b].getPosY() - Screen.ball[ball_a].getPosY();
         double skalar2 = (Screen.ball[ball_b].getVelX_new() * x_line + Screen.ball[ball_b].getVelY_new() * y_line) / (Math.pow(x_line, 2) + Math.pow(y_line, 2));
         double projB_x = skalar2 * x_line;
         double projB_y = skalar2 * y_line;
+        Screen.ball[ball_b].setVelX_new(projB_x);
+        Screen.ball[ball_b].setVelY_new(projB_y);
 
-        double b = projB_x * x_line + projB_y * y_line;
+        //double parallelA_x = Screen.ball[ball_a].getVelX_new() - projA_x;
+        //double parallelA_y = Screen.ball[ball_a].getVelY_new() - projA_y;
+
+        //Vektor Zerlegung Kugel 2
+
         //double parallelB_x = Screen.ball[ball_b].getVelX_new() - projB_x;
         //double parallelB_y = Screen.ball[ball_b].getVelY_new() - projB_y;
     }
@@ -565,9 +590,9 @@ public class Controller {
     // a = F / m
     public static void magneticPull(int magnet1, int magnet2) {
         double feldKonstante = 4 * Math.PI * Math.pow(10, -7);                      //Naturkonstante bei Magnetismus
-        double magnetesierbarkeit = 200000;                                         //Speziellegierung
+        double magnetesierbarkeit = 100000;                                         //Speziellegierung
         double r = vectorLength(Screen.ball[magnet1].getPosX() - Screen.ball[magnet2].getPosX(),Screen.ball[magnet1].getPosY() - Screen.ball[magnet2].getPosY() );
-        double I = 80;                                                              //Stromstarke in Ampere
+        double I = 16;                                                              //Stromstarke in Ampere
 
         double B = feldKonstante * magnetesierbarkeit * (I / (2 * Math.PI * r));    //Magnetische Flussdichte in Tesla -> Staerke des Magnetfeldes
         double F = I * B * (Screen.diameter / Screen.scale);                        //Magnetische Anziehungskraft

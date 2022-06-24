@@ -400,11 +400,11 @@ public class Main {
     };
 
     public static Marble resetMagnet1(){
-        return new Marble(54, 44.2, 0, 0, 2, false, true);
+        return new Marble(54, 44.2, 0, 0, 2, true, true);
     }
 
     public static Marble resetMagnet2(){
-        return new Marble(58, 42.9, 0, 0, 2, false, true);
+        return new Marble(58, 42.9, 0, 0, 2, true, true);
     }
 
     public static int newY(int y){
