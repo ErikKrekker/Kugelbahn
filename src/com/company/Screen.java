@@ -99,11 +99,11 @@ public class Screen extends JPanel implements Runnable {
         g2 = (Graphics2D)g;
         //Zeichnen der Linien
         for (int i = 0; i < lines.length; i++){
-            if(i == Main.linechoice.getSelectedIndex()+1 && Main.linemovement.isSelected()){
+            if(i == Main.linechoice.getSelectedIndex()+4 && Main.linemovement.isSelected()){
                 g2.setColor((Color.red));
             }else
                 g2.setColor(Color.white);
-            g2.drawLine(lines[i].getX0() * scale, lines[i].getY0() * scale, lines[i].getX1() * scale, lines[i].getY1() * scale);
+            g2.drawLine((int)lines[i].getX0() * scale, (int)lines[i].getY0() * scale, (int)lines[i].getX1() * scale, (int)lines[i].getY1() * scale);
         }
 
         //Zeichnen der Kugeln mit Geschwindigkeitsvektor

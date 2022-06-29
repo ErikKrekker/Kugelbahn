@@ -356,7 +356,13 @@ public class Main {
 
     public static Line[] defaultLineSettings(){
         Line[] lines ={
-                new Line(35,25,65,35),
+                new Line(35,30,65,35),
+                //NUW
+                new Line(53,32.6,58,3),
+                new Line(58, 34, 62, 0),
+                new Line(35,28,65,33),
+
+
                 new Line(5,8,35,22),
                 new Line(0, 7,5,45),
                 new Line(10, 45,30,30),
@@ -371,7 +377,7 @@ public class Main {
 
     public static Marble[] defaultBallSettings(){
         Marble ball[] = {
-                new Marble(23, 60, 0, 0, 1.7, true, false),
+                new Marble(50, 44, 0, 0, 1.7, true, false),
                 new Marble(25, 59, 0, 0, 1.7, true, false),
                 resetMagnet1(),
                 resetMagnet2()
@@ -381,14 +387,19 @@ public class Main {
 
     static double[][] startvalues = {
 
-            {23, newY(60), 0, 0, 1.7},
+            {50, newY(44), 0, 0, 1.7},
             {25, newY(59), 0, 0, 1.7},
             {54, newY(44.2), 0, 0, 2},
             {58, newY(42.9), 0, 0, 2}
     };
 
-    static int[][] startvaluesline = {
-            {35, 25, 65, 35},
+    static double[][] startvaluesline = {
+            {35, 30, 65, 35},
+
+            {53, 32.6,58,3},
+            {58, 34, 62, 0},
+            {35, 28, 65, 33},
+
             {5,8,35,22},
             {0, 7, 5, 45},
             {10, 45, 30, 30},
@@ -400,11 +411,11 @@ public class Main {
     };
 
     public static Marble resetMagnet1(){
-        return new Marble(54, 44.2, 0, 0, 2, true, true);
+        return new Marble(51, 42.8, 0, 0, 2, true, true);
     }
 
     public static Marble resetMagnet2(){
-        return new Marble(58, 42.9, 0, 0, 2, true, true);
+        return new Marble(57.5, 41.7, 0, 0, 2, true, true);
     }
 
     public static int newY(int y){
